@@ -22,6 +22,9 @@ const initNavbar = (basePath) => {
         if (user) {
             $('#authLinks').hide();
             $('#userLinks').show();
+            if (user.avatar) {
+                $('#userAvatar').attr('src', API_URL + user.avatar);
+            }
             if (user.role === 'admin') $('#adminLink').show();
             updateCartBadge(prefix);
         }
@@ -31,6 +34,8 @@ const initNavbar = (basePath) => {
             window.location.href = prefix + 'index.html';
         });
     });
+    // Load footer
+    $('#footer').load(prefix + 'footer.html');
 };
 
 const updateCartBadge = (basePath) => {

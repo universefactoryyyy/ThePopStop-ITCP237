@@ -55,10 +55,19 @@ exports.loginUser = async (req, res) => {
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
         await user.update({ token });
 
+        // Get customer for avatar
+        const customer = await Customer.findOne({ where: { user_id: user.id } });
+
         return res.status(200).json({
             success: true,
             message: 'Welcome back',
-            user: { id: user.id, name: user.name, email: user.email, role: user.role },
+            user: { 
+                id: user.id, 
+                name: user.name, 
+                email: user.email, 
+                role: user.role,
+                avatar: customer?.image_path || null
+            },
             token
         });
     } catch (err) {
@@ -100,7 +109,18 @@ exports.updateProfile = async (req, res) => {
                 image_path: image_path || customer.image_path
             });
         }
-        return res.status(200).json({ success: true, message: 'Profile updated', customer });
+        // Get updated user
+        const updatedUser = await User.findByPk(userId, { attributes: ['id', 'name', 'email', 'role'] });
+        // Include avatar
+        const customerData = await Customer.findOne({ where: { user_id: userId } });
+        const userWithAvatar = {
+            id: updatedUser.id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            role: updatedUser.role,
+            avatar: customerData?.image_path || null
+        };
+        return res.status(200).json({ success: true, message: 'Profile updated', user: userWithAvatar, customer: customerData });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: 'Error updating profile' });

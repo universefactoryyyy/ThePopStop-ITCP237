@@ -100,16 +100,10 @@ $(document).ready(function () {
         $('#userName').text(user.name);
         $('#userEmail').text(user.email);
 
-        $('#navbar').load('header.html', function () {
-            $('#authLinks').hide();
-            $('#userLinks').show();
-            if (user.role === 'admin') $('#adminLink').show();
-            $('#logoutBtn').on('click', function (e) {
-                e.preventDefault();
-                sessionStorage.clear();
-                window.location.href = 'index.html';
-            });
-        });
+        // Load user's current avatar
+        if (user.avatar) {
+            $('#avatarPreview').attr('src', API_URL + user.avatar);
+        }
 
         $('#avatar').on('change', function () {
             const file = this.files[0];
@@ -133,6 +127,9 @@ $(document).ready(function () {
                 processData: false,
                 headers: { Authorization: 'Bearer ' + JSON.parse(token) },
                 success: function (data) {
+                    // Update user in sessionStorage
+                    const updatedUser = { ...user, ...data.user };
+                    sessionStorage.setItem('user', JSON.stringify(updatedUser));
                     Swal.fire({ icon: 'success', text: data.message, timer: 1500, showConfirmButton: false });
                 },
                 error: function (xhr) {
