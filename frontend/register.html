@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register - The Pop Stop</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css">
+    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.min.js"></script>
+</head>
+<body>
+    <div class="form-wrap" style="max-width:520px;">
+        <h2 class="form-title"><i class="fas fa-user-plus"></i> Register</h2>
+        <form id="registerForm" enctype="multipart/form-data">
+            <div class="form-group text-center">
+                <img id="avatarPreview" src="images/placeholder.svg" width="80" height="80" style="border-radius:50%;object-fit:cover;border:2px solid #fcd5e0;" alt="Avatar">
+                <div class="mt-2">
+                    <label class="btn btn-secondary btn-sm mb-0">
+                        <i class="fas fa-camera"></i> Profile Photo (optional)
+                        <input type="file" id="avatar" name="image" accept="image/*" hidden>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="Your name">
+                <span class="error-msg" id="nameError">Name is required.</span>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="you@email.com">
+                <span class="error-msg" id="emailError">Valid email is required.</span>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="text" id="phone" name="phone" class="form-control" placeholder="09XX XXX XXXX">
+                <span class="error-msg" id="phoneError">Phone number is required.</span>
+            </div>
+            <div class="form-group">
+                <label for="addressline">Address</label>
+                <textarea id="addressline" name="addressline" class="form-control" rows="2" placeholder="Full shipping address"></textarea>
+                <span class="error-msg" id="addressError">Address is required.</span>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password">
+                <span class="error-msg" id="passwordError">Password is required.</span>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm password">
+                <span class="error-msg" id="confirmError">Passwords do not match.</span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-user-plus"></i> Register</button>
+            <p class="text-center mt-3">Have an account? <a href="login.html">Login</a></p>
+        </form>
+    </div>
+    <script src="js/user.js"></script>
+</body>
+</html>

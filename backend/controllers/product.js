@@ -1,0 +1,117 @@
+const db = require('../models');
+const Product = db.Product;
+const ProductPhoto = db.ProductPhoto;
+const { Op } = require('sequelize');
+
+exports.getAllProducts = async (req, res) => {
+    try {
+        const { search, brand, series, status, sort } = req.query;
+        const where = { deleted_at: null };
+        if (search) where[Op.or] = [{ name: { [Op.like]: `%${search}%` } }, { brand: { [Op.like]: `%${search}%` } }, { series: { [Op.like]: `%${search}%` } }];
+        if (brand) where.brand = brand;
+        if (series) where.series = series;
+        if (status) where.status = status;
+        let order = [['createdAt', 'DESC']];
+        if (sort === 'price_asc') order = [['price', 'ASC']];
+        if (sort === 'price_desc') order = [['price', 'DESC']];
+
+        const products = await Product.findAll({ where, include: [{ model: ProductPhoto }], order });
+        return res.status(200).json({ rows: products });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Error fetching products' });
+    }
+};
+
+exports.getSingleProduct = async (req, res) => {
+    try {
+        const product = await Product.findOne({
+            where: { id: req.params.id, deleted_at: null },
+            include: [{ model: ProductPhoto }, {
+                model: db.Review, include: [{ model: db.User, attributes: ['name'] }]
+            }]
+        });
+        if (!product) return res.status(404).json({ message: 'Product not found' });
+        return res.status(200).json({ success: true, result: product });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Error fetching product' });
+    }
+};
+
+exports.searchAutocomplete = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q) return res.status(200).json({ rows: [] });
+        const products = await Product.findAll({
+            where: {
+                deleted_at: null,
+                [Op.or]: [{ name: { [Op.like]: `%${q}%` } }, { brand: { [Op.like]: `%${q}%` } }]
+            },
+            attributes: ['id', 'name', 'brand', 'price'],
+            limit: 8
+        });
+        return res.status(200).json({ rows: products });
+    } catch (err) {
+        return res.status(500).json({ error: 'Search error' });
+    }
+};
+
+exports.createProduct = async (req, res) => {
+    try {
+        const { name, series, brand, price, cost_price, sku, description, stock_quantity, status } = req.body;
+        if (!name || !price || !sku) return res.status(400).json({ error: 'Missing required fields: name, price, sku' });
+
+        let image_url = null;
+        if (req.file) image_url = req.file.path.replace(/\\/g, '/');
+
+        const product = await Product.create({ name, series, brand, price, cost_price, sku, description, stock_quantity: stock_quantity || 0, status: status || 'Out of Stock', image_url });
+        return res.status(201).json({ success: true, product });
+    } catch (err) {
+        console.log(err);
+        if (err.name === 'SequelizeUniqueConstraintError') return res.status(409).json({ error: 'SKU already exists' });
+        return res.status(500).json({ error: 'Error creating product', details: err.message });
+    }
+};
+
+exports.updateProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, series, brand, price, cost_price, sku, description, stock_quantity, status } = req.body;
+        let image_url = req.file ? req.file.path.replace(/\\/g, '/') : undefined;
+
+        const updateData = { name, series, brand, price, cost_price, sku, description, stock_quantity, status };
+        if (image_url) updateData.image_url = image_url;
+
+        await Product.update(updateData, { where: { id } });
+        return res.status(200).json({ success: true });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Error updating product' });
+    }
+};
+
+exports.deleteProduct = async (req, res) => {
+    try {
+        await Product.update({ deleted_at: new Date() }, { where: { id: req.params.id } });
+        return res.status(200).json({ success: true, message: 'Product deleted' });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Error deleting product' });
+    }
+};
+
+exports.uploadPhotos = async (req, res) => {
+    try {
+        const { product_id } = req.params;
+        if (!req.files || req.files.length === 0) return res.status(400).json({ error: 'No files uploaded' });
+
+        const photos = await Promise.all(req.files.map(f =>
+            ProductPhoto.create({ product_id, photo_path: f.path.replace(/\\/g, '/') })
+        ));
+        return res.status(201).json({ success: true, photos });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Error uploading photos' });
+    }
+};

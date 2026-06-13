@@ -1,0 +1,316 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-06-12T00:00:00.000Z",
+  "__export_source": "the-pop-stop",
+  "resources": [
+    {
+      "_type": "workspace",
+      "_id": "wrk_popstop",
+      "name": "The Pop Stop API",
+      "description": "Node.js API for The Pop Stop e-commerce"
+    },
+    {
+      "_type": "environment",
+      "_id": "env_popstop",
+      "parentId": "wrk_popstop",
+      "name": "Local",
+      "data": {
+        "base_url": "http://localhost:4000/api/v1",
+        "token": "",
+        "admin_token": ""
+      }
+    },
+    {
+      "_type": "request_group",
+      "_id": "fld_auth",
+      "parentId": "wrk_popstop",
+      "name": "Auth"
+    },
+    {
+      "_type": "request",
+      "_id": "req_register",
+      "parentId": "fld_auth",
+      "name": "POST Register",
+      "method": "POST",
+      "url": "{{ base_url }}/register",
+      "headers": [{"name": "Content-Type", "value": "application/json"}],
+      "body": {"mimeType": "application/json", "text": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@popstop.com\",\n  \"password\": \"test123\"\n}"}
+    },
+    {
+      "_type": "request",
+      "_id": "req_login",
+      "parentId": "fld_auth",
+      "name": "POST Login",
+      "method": "POST",
+      "url": "{{ base_url }}/login",
+      "headers": [{"name": "Content-Type", "value": "application/json"}],
+      "body": {"mimeType": "application/json", "text": "{\n  \"email\": \"admin@popstop.com\",\n  \"password\": \"password\"\n}"}
+    },
+    {
+      "_type": "request_group",
+      "_id": "fld_products",
+      "parentId": "wrk_popstop",
+      "name": "Products"
+    },
+    {
+      "_type": "request",
+      "_id": "req_products_all",
+      "parentId": "fld_products",
+      "name": "GET All Products",
+      "method": "GET",
+      "url": "{{ base_url }}/products"
+    },
+    {
+      "_type": "request",
+      "_id": "req_products_search",
+      "parentId": "fld_products",
+      "name": "GET Search Products",
+      "method": "GET",
+      "url": "{{ base_url }}/products/search?q=molly"
+    },
+    {
+      "_type": "request",
+      "_id": "req_products_one",
+      "parentId": "fld_products",
+      "name": "GET Product by ID",
+      "method": "GET",
+      "url": "{{ base_url }}/products/1"
+    },
+    {
+      "_type": "request",
+      "_id": "req_products_create",
+      "parentId": "fld_products",
+      "name": "POST Create Product",
+      "method": "POST",
+      "url": "{{ base_url }}/products",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ admin_token }}"}],
+      "body": {"mimeType": "multipart/form-data", "params": [
+        {"name": "name", "value": "Test Product"},
+        {"name": "series", "value": "Test Series"},
+        {"name": "brand", "value": "POP MART"},
+        {"name": "price", "value": "999.00"},
+        {"name": "cost_price", "value": "500.00"},
+        {"name": "sku", "value": "TEST-001"},
+        {"name": "description", "value": "Test description"},
+        {"name": "stock_quantity", "value": "10"},
+        {"name": "status", "value": "In Stock"}
+      ]}
+    },
+    {
+      "_type": "request",
+      "_id": "req_products_update",
+      "parentId": "fld_products",
+      "name": "PUT Update Product",
+      "method": "PUT",
+      "url": "{{ base_url }}/products/1",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ admin_token }}"}],
+      "body": {"mimeType": "multipart/form-data", "params": [
+        {"name": "name", "value": "Updated Product"},
+        {"name": "price", "value": "1099.00"},
+        {"name": "sku", "value": "PM-MOLLY-ST-001"},
+        {"name": "status", "value": "In Stock"}
+      ]}
+    },
+    {
+      "_type": "request",
+      "_id": "req_products_delete",
+      "parentId": "fld_products",
+      "name": "DELETE Product",
+      "method": "DELETE",
+      "url": "{{ base_url }}/products/99",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ admin_token }}"}]
+    },
+    {
+      "_type": "request",
+      "_id": "req_products_photos",
+      "parentId": "fld_products",
+      "name": "POST Upload Photos",
+      "method": "POST",
+      "url": "{{ base_url }}/products/1/photos",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ admin_token }}"}],
+      "body": {"mimeType": "multipart/form-data", "params": [
+        {"name": "photos", "type": "file", "fileName": ""}
+      ]}
+    },
+    {
+      "_type": "request_group",
+      "_id": "fld_cart",
+      "parentId": "wrk_popstop",
+      "name": "Cart"
+    },
+    {
+      "_type": "request",
+      "_id": "req_cart_get",
+      "parentId": "fld_cart",
+      "name": "GET Cart",
+      "method": "GET",
+      "url": "{{ base_url }}/cart",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ token }}"}]
+    },
+    {
+      "_type": "request",
+      "_id": "req_cart_add",
+      "parentId": "fld_cart",
+      "name": "POST Add to Cart",
+      "method": "POST",
+      "url": "{{ base_url }}/cart",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ token }}"}, {"name": "Content-Type", "value": "application/json"}],
+      "body": {"mimeType": "application/json", "text": "{\n  \"product_id\": 1,\n  \"quantity\": 1\n}"}
+    },
+    {
+      "_type": "request",
+      "_id": "req_cart_update",
+      "parentId": "fld_cart",
+      "name": "PUT Update Cart Item",
+      "method": "PUT",
+      "url": "{{ base_url }}/cart/1",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ token }}"}, {"name": "Content-Type", "value": "application/json"}],
+      "body": {"mimeType": "application/json", "text": "{\n  \"quantity\": 2\n}"}
+    },
+    {
+      "_type": "request",
+      "_id": "req_cart_delete",
+      "parentId": "fld_cart",
+      "name": "DELETE Cart Item",
+      "method": "DELETE",
+      "url": "{{ base_url }}/cart/1",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ token }}"}]
+    },
+    {
+      "_type": "request_group",
+      "_id": "fld_orders",
+      "parentId": "wrk_popstop",
+      "name": "Orders"
+    },
+    {
+      "_type": "request",
+      "_id": "req_orders_create",
+      "parentId": "fld_orders",
+      "name": "POST Create Order",
+      "method": "POST",
+      "url": "{{ base_url }}/orders",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ token }}"}, {"name": "Content-Type", "value": "application/json"}],
+      "body": {"mimeType": "application/json", "text": "{\n  \"cart\": [{\"product_id\": 1, \"quantity\": 1}],\n  \"shipping_address\": \"123 Main St, Manila\",\n  \"payment_method\": \"Cash on Delivery\"\n}"}
+    },
+    {
+      "_type": "request",
+      "_id": "req_orders_my",
+      "parentId": "fld_orders",
+      "name": "GET My Orders",
+      "method": "GET",
+      "url": "{{ base_url }}/orders/my",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ token }}"}]
+    },
+    {
+      "_type": "request",
+      "_id": "req_orders_all",
+      "parentId": "fld_orders",
+      "name": "GET All Orders (Admin)",
+      "method": "GET",
+      "url": "{{ base_url }}/orders",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ admin_token }}"}]
+    },
+    {
+      "_type": "request",
+      "_id": "req_orders_status",
+      "parentId": "fld_orders",
+      "name": "PUT Update Order Status",
+      "method": "PUT",
+      "url": "{{ base_url }}/orders/1/status",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ admin_token }}"}, {"name": "Content-Type", "value": "application/json"}],
+      "body": {"mimeType": "application/json", "text": "{\n  \"status\": \"Shipped\"\n}"}
+    },
+    {
+      "_type": "request_group",
+      "_id": "fld_reviews",
+      "parentId": "wrk_popstop",
+      "name": "Reviews"
+    },
+    {
+      "_type": "request",
+      "_id": "req_reviews_product",
+      "parentId": "fld_reviews",
+      "name": "GET Product Reviews",
+      "method": "GET",
+      "url": "{{ base_url }}/reviews/product/1"
+    },
+    {
+      "_type": "request",
+      "_id": "req_reviews_create",
+      "parentId": "fld_reviews",
+      "name": "POST Create Review",
+      "method": "POST",
+      "url": "{{ base_url }}/reviews",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ token }}"}, {"name": "Content-Type", "value": "application/json"}],
+      "body": {"mimeType": "application/json", "text": "{\n  \"product_id\": 1,\n  \"order_id\": 1,\n  \"rating\": 5,\n  \"review_text\": \"Great product!\"\n}"}
+    },
+    {
+      "_type": "request",
+      "_id": "req_reviews_delete",
+      "parentId": "fld_reviews",
+      "name": "DELETE Review (Admin)",
+      "method": "DELETE",
+      "url": "{{ base_url }}/reviews/1",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ admin_token }}"}]
+    },
+    {
+      "_type": "request",
+      "_id": "req_reviews_approve",
+      "parentId": "fld_reviews",
+      "name": "PUT Approve Review",
+      "method": "PUT",
+      "url": "{{ base_url }}/reviews/1/approve",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ admin_token }}"}]
+    },
+    {
+      "_type": "request_group",
+      "_id": "fld_users",
+      "parentId": "wrk_popstop",
+      "name": "Users (Admin)"
+    },
+    {
+      "_type": "request",
+      "_id": "req_users_all",
+      "parentId": "fld_users",
+      "name": "GET All Users",
+      "method": "GET",
+      "url": "{{ base_url }}/users",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ admin_token }}"}]
+    },
+    {
+      "_type": "request",
+      "_id": "req_users_role",
+      "parentId": "fld_users",
+      "name": "PUT Update User Role",
+      "method": "PUT",
+      "url": "{{ base_url }}/users/2/role",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ admin_token }}"}, {"name": "Content-Type", "value": "application/json"}],
+      "body": {"mimeType": "application/json", "text": "{\n  \"role\": \"customer\"\n}"}
+    },
+    {
+      "_type": "request",
+      "_id": "req_users_status",
+      "parentId": "fld_users",
+      "name": "PUT Deactivate User",
+      "method": "PUT",
+      "url": "{{ base_url }}/users/2/status",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ admin_token }}"}]
+    },
+    {
+      "_type": "request_group",
+      "_id": "fld_dashboard",
+      "parentId": "wrk_popstop",
+      "name": "Dashboard"
+    },
+    {
+      "_type": "request",
+      "_id": "req_dashboard",
+      "parentId": "fld_dashboard",
+      "name": "GET Dashboard Stats",
+      "method": "GET",
+      "url": "{{ base_url }}/dashboard",
+      "headers": [{"name": "Authorization", "value": "Bearer {{ admin_token }}"}]
+    }
+  ]
+}

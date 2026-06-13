@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Users - The Pop Stop</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">The Pop Stop</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="products.html"><i class="fas fa-box"></i> Products</a>
+                <a href="users.html" class="active"><i class="fas fa-users"></i> Users</a>
+                <a href="orders.html"><i class="fas fa-shopping-bag"></i> Orders</a>
+                <a href="discounts.html"><i class="fas fa-tags"></i> Discounts</a>
+                <a href="reviews.html"><i class="fas fa-star"></i> Reviews</a>
+                <a href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="../index.html" class="sidebar-back-btn"><i class="fas fa-store"></i> Back to Shop</a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <h2 class="mb-4">Users</h2>
+            <table id="usersTable" class="table table-striped">
+                <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+            </table>
+        </main>
+    </div>
+    <script>
+    const API_URL = 'http://localhost:4000';
+    $(document).ready(function() {
+        const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+        if (!user || user.role !== 'admin') { window.location.href = '../index.html'; return; }
+        const token = JSON.parse(sessionStorage.getItem('token'));
+        const table = $('#usersTable').DataTable({
+            ajax: { url: `${API_URL}/api/v1/users`, dataSrc: 'rows', headers: { Authorization: 'Bearer ' + token } },
+            columns: [
+                { data: 'id' }, { data: 'name' }, { data: 'email' }, { data: 'role' },
+                { data: 'is_active', render: d => d ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">Inactive</span>' },
+                { data: 'createdAt', render: d => new Date(d).toLocaleDateString() },
+                { data: null, render: d => `
+                    <div class="admin-actions">
+                        <select class="admin-select role-select" data-id="${d.id}">
+                            <option value="customer" ${d.role==='customer'?'selected':''}>Customer</option>
+                            <option value="admin" ${d.role==='admin'?'selected':''}>Admin</option>
+                        </select>
+                        <button class="btn btn-sm ${d.is_active?'btn-danger':'btn-success'} status-btn" data-id="${d.id}">${d.is_active?'Deactivate':'Activate'}</button>
+                    </div>` }
+            ]
+        });
+        $(document).on('change', '.role-select', function() {
+            $.ajax({ method:'PUT', url:`${API_URL}/api/v1/users/${$(this).data('id')}/role`, headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'}, data:JSON.stringify({role:$(this).val()}), success:()=>Swal.fire({icon:'success',text:'Role updated',timer:1000,showConfirmButton:false}) });
+        });
+        $(document).on('click', '.status-btn', function() {
+            $.ajax({ method:'PUT', url:`${API_URL}/api/v1/users/${$(this).data('id')}/status`, headers:{Authorization:'Bearer '+token}, success:()=>{ table.ajax.reload(); Swal.fire({icon:'success',text:'Status updated',timer:1000,showConfirmButton:false}); } });
+        });
+    });
+    </script>
+</body>
+</html>

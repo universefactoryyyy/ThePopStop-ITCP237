@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Checkout - The Pop Stop</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css">
+    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.min.js"></script>
+</head>
+<body>
+    <div id="navbar"></div>
+    <div class="page-container">
+        <h2 class="mb-4"><i class="fas fa-credit-card"></i> Checkout</h2>
+        <div class="row">
+            <div class="col-md-7">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">Order Summary</h5>
+                            <a href="cart.html" class="btn btn-sm btn-outline-secondary">Change selection</a>
+                        </div>
+                        <div id="cartSummary"></div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="discountSelect">Promo Code</label>
+                            <div class="input-group">
+                                <select id="discountSelect" class="form-control">
+                                    <option value="">No discount</option>
+                                </select>
+                                <div class="input-group-append">
+                                    <button type="button" id="applyDiscountBtn" class="btn btn-secondary">Apply</button>
+                                </div>
+                            </div>
+                            <small id="discountMessage" class="text-success" style="display:none;"></small>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1"><span>Subtotal</span><span id="orderSubtotal"></span></div>
+                        <div class="d-flex justify-content-between mb-1 text-success" id="discountRow" style="display:none;"><span>Discount</span><span id="orderDiscount"></span></div>
+                        <hr>
+                        <h5>Total: <span id="orderTotal"></span></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-body">
+                        <form id="checkoutForm">
+                            <div class="form-group">
+                                <label for="shippingPhone">Phone Number</label>
+                                <input type="tel" id="shippingPhone" class="form-control" placeholder="e.g. 09123456789">
+                                <span class="error-msg" id="phoneError">Phone number is required.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="shippingAddress">Shipping Address</label>
+                                <textarea id="shippingAddress" class="form-control" rows="3" placeholder="Street, city, province, zip code"></textarea>
+                                <span class="error-msg" id="addressError">Shipping address is required.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentMethod">Payment Method</label>
+                                <select id="paymentMethod" class="form-control">
+                                    <option value="">Select payment method</option>
+                                    <option value="Cash on Delivery">Cash on Delivery</option>
+                                    <option value="GCash">GCash</option>
+                                    <option value="Credit Card">Credit Card</option>
+                                </select>
+                                <span class="error-msg" id="paymentError">Payment method is required.</span>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-check"></i> Place Order</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/catalog.js"></script>
+    <script src="js/order.js"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Reports - The Pop Stop</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">The Pop Stop</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="products.html"><i class="fas fa-box"></i> Products</a>
+                <a href="users.html"><i class="fas fa-users"></i> Users</a>
+                <a href="orders.html"><i class="fas fa-shopping-bag"></i> Orders</a>
+                <a href="discounts.html"><i class="fas fa-tags"></i> Discounts</a>
+                <a href="reviews.html"><i class="fas fa-star"></i> Reviews</a>
+                <a href="reports.html" class="active"><i class="fas fa-chart-bar"></i> Reports</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="../index.html" class="sidebar-back-btn"><i class="fas fa-store"></i> Back to Shop</a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <h2 class="mb-4">Reports</h2>
+            <div class="card mb-4"><div class="card-body">
+                <div class="form-inline">
+                    <label class="mr-2">Start:</label><input type="date" id="startDate" class="form-control mr-3">
+                    <label class="mr-2">End:</label><input type="date" id="endDate" class="form-control mr-3">
+                    <button id="filterReports" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                </div>
+            </div></div>
+            <div class="reports-grid">
+                <div class="chart-container chart-compact reports-bar"><h5>Sales Performance by Date</h5><canvas id="reportBarChart"></canvas></div>
+                <div class="chart-container chart-compact reports-pie"><h5>Sales % by Brand</h5><canvas id="reportPieChart"></canvas></div>
+                <div class="chart-container chart-compact reports-line"><h5>Monthly Revenue Trend</h5><canvas id="reportLineChart"></canvas></div>
+            </div>
+        </main>
+    </div>
+    <script>
+    $(document).ready(function() {
+        const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+        if (!user || user.role !== 'admin') { window.location.href = '../index.html'; return; }
+    });
+    </script>
+    <script src="../js/charts.js"></script>
+</body>
+</html>

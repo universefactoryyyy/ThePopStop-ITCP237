@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Products - The Pop Stop</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">The Pop Stop</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="products.html" data-page="products"><i class="fas fa-box"></i> Products</a>
+                <a href="users.html" data-page="users"><i class="fas fa-users"></i> Users</a>
+                <a href="orders.html" data-page="orders"><i class="fas fa-shopping-bag"></i> Orders</a>
+                <a href="discounts.html" data-page="discounts"><i class="fas fa-tags"></i> Discounts</a>
+                <a href="reviews.html" data-page="reviews"><i class="fas fa-star"></i> Reviews</a>
+                <a href="reports.html" data-page="reports"><i class="fas fa-chart-bar"></i> Reports</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="../index.html" class="sidebar-back-btn"><i class="fas fa-store"></i> Back to Shop</a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Products</h2>
+                <button id="addProductBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add Product</button>
+            </div>
+            <table id="productTable" class="table table-striped">
+                <thead>
+                    <tr><th>ID</th><th>Image</th><th>Name</th><th>Series</th><th>Brand</th><th>SKU</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr>
+                </thead>
+            </table>
+        </main>
+    </div>
+
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title" id="productModalTitle">Add Product</h5><button type="button" class="close" data-dismiss="modal">&times;</button></div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <div class="form-row">
+                            <div class="form-group col-md-6"><label>Name</label><input id="pName" class="form-control"><span class="error-msg" id="pNameError">Name required.</span></div>
+                            <div class="form-group col-md-6"><label>SKU</label><input id="pSku" class="form-control"><span class="error-msg" id="pSkuError">SKU required.</span></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4"><label>Series</label><input id="pSeries" class="form-control"></div>
+                            <div class="form-group col-md-4"><label>Brand</label><input id="pBrand" class="form-control"></div>
+                            <div class="form-group col-md-4"><label>Status</label>
+                                <select id="pStatus" class="form-control"><option>In Stock</option><option>Low Stock</option><option>Out of Stock</option></select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4"><label>Price</label><input id="pPrice" type="number" step="0.01" class="form-control"><span class="error-msg" id="pPriceError">Valid price required.</span></div>
+                            <div class="form-group col-md-4"><label>Cost Price</label><input id="pCostPrice" type="number" step="0.01" class="form-control"></div>
+                            <div class="form-group col-md-4"><label>Stock</label><input id="pStock" type="number" class="form-control"></div>
+                        </div>
+                        <div class="form-group"><label>Description</label><textarea id="pDescription" class="form-control" rows="2"></textarea></div>
+                        <div class="form-group"><label>Main Image</label><input id="pImage" type="file" class="form-control" accept="image/*"></div>
+                        <div class="form-group"><label>Additional Photos</label><input id="pAdditionalPhotos" type="file" class="form-control" accept="image/*" multiple></div>
+                        <div id="pAdditionalPreview" class="photo-gallery-grid"></div>
+                    </form>
+                </div>
+                <div class="modal-footer"><button class="btn btn-secondary" data-dismiss="modal">Cancel</button><button id="saveProductBtn" class="btn btn-primary">Save</button></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="photosModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title">Product Photos</h5><button type="button" class="close" data-dismiss="modal">&times;</button></div>
+                <div class="modal-body">
+                    <h6 class="mb-2">Current Photos</h6>
+                    <div id="currentPhotos" class="photo-gallery-grid"><p class="text-muted">Loading...</p></div>
+                    <hr>
+                    <h6 class="mb-2">Upload Additional Photos</h6>
+                    <div id="dropzone" class="dropzone-area"><i class="fas fa-cloud-upload-alt fa-2x"></i><p>Drop files here or click to browse</p></div>
+                    <input type="file" id="photoInput" multiple accept="image/*" style="display:none;">
+                    <div id="photoPreview" class="photo-gallery-grid mt-3"></div>
+                </div>
+                <div class="modal-footer"><button id="uploadPhotosBtn" class="btn btn-primary"><i class="fas fa-upload"></i> Upload</button></div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/item.js"></script>
+</body>
+</html>
