@@ -47,45 +47,47 @@ const generateOrderReceipt = (order) => {
         let y = 96;
 
         // Order summary card
-        const summaryHeight = 76;
+        const summaryHeight = 88;
         drawRoundedRect(doc, margin, y, contentWidth, summaryHeight, 8, COLORS.pink50, COLORS.border);
 
         const colW = contentWidth / 2 - 12;
         doc.fillColor(COLORS.textLight).font('Helvetica').fontSize(8)
             .text('ORDER ID', margin + 14, y + 12, { lineBreak: false });
         doc.fillColor(COLORS.textDark).font('Helvetica-Bold').fontSize(12)
-            .text(`#${order.id}`, margin + 14, y + 22, { lineBreak: false });
+            .text(`#${order.id}`, margin + 14, y + 24, { lineBreak: false });
 
         doc.fillColor(COLORS.textLight).font('Helvetica').fontSize(8)
             .text('STATUS', margin + 14 + colW, y + 12, { lineBreak: false });
         doc.fillColor(COLORS.pink500).font('Helvetica-Bold').fontSize(11)
-            .text(order.status || 'Pending', margin + 14 + colW, y + 22, { lineBreak: false });
+            .text(order.status || 'Pending', margin + 14 + colW, y + 24, { width: colW - 8, lineBreak: true });
 
         doc.fillColor(COLORS.textLight).font('Helvetica').fontSize(8)
-            .text('DATE', margin + 14, y + 44, { lineBreak: false });
+            .text('DATE', margin + 14, y + 50, { lineBreak: false });
         doc.fillColor(COLORS.textDark).font('Helvetica').fontSize(9)
-            .text(new Date(order.createdAt).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' }), margin + 14, y + 54, { width: colW, lineBreak: false });
+            .text(new Date(order.createdAt).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' }), margin + 14, y + 62, { width: colW, lineBreak: false });
 
         doc.fillColor(COLORS.textLight).font('Helvetica').fontSize(8)
-            .text('PAYMENT', margin + 14 + colW, y + 44, { lineBreak: false });
+            .text('PAYMENT', margin + 14 + colW, y + 50, { lineBreak: false });
         doc.fillColor(COLORS.textDark).font('Helvetica').fontSize(9)
-            .text(order.payment_method || 'N/A', margin + 14 + colW, y + 54, { width: colW - 8, lineBreak: false });
+            .text(order.payment_method || 'N/A', margin + 14 + colW, y + 62, { width: colW - 8, lineBreak: true });
 
-        y += summaryHeight + 12;
+        y += summaryHeight + 16;
 
-        // Shipping address — fixed height so text never flows to a new page
-        const shipHeight = 48;
+        // Shipping address — dynamic height
+        const addressText = (order.shipping_address || 'N/A').replace(/\n/g, ' · ');
+        doc.fillColor(COLORS.textLight).font('Helvetica').fontSize(8);
+        const addressLines = doc.heightOfString(addressText, { width: contentWidth - 28, lineBreak: true });
+        const shipHeight = 24 + Math.max(addressLines, 18);
         drawRoundedRect(doc, margin, y, contentWidth, shipHeight, 8, COLORS.white, COLORS.border);
         doc.fillColor(COLORS.textLight).font('Helvetica').fontSize(8)
             .text('SHIPPING ADDRESS', margin + 14, y + 10, { lineBreak: false });
         doc.fillColor(COLORS.textDark).font('Helvetica').fontSize(9)
-            .text((order.shipping_address || 'N/A').replace(/\n/g, ' · '), margin + 14, y + 22, {
+            .text(addressText, margin + 14, y + 24, {
                 width: contentWidth - 28,
-                height: 22,
                 lineBreak: true
             });
 
-        y += shipHeight + 14;
+        y += shipHeight + 18;
 
         // Items table
         doc.fillColor(COLORS.textDark).font('Helvetica-Bold').fontSize(11)
@@ -97,63 +99,70 @@ const generateOrderReceipt = (order) => {
         const colPrice = contentWidth * 0.21;
         const colSub = contentWidth * 0.21;
 
-        doc.rect(margin, y, contentWidth, 22).fill(COLORS.pink500);
+        doc.rect(margin, y, contentWidth, 24).fill(COLORS.pink500);
         doc.fillColor(COLORS.white).font('Helvetica-Bold').fontSize(8);
-        doc.text('Product', margin + 8, y + 6, { width: colProduct - 8, lineBreak: false });
-        doc.text('Qty', margin + colProduct, y + 6, { width: colQty, align: 'center', lineBreak: false });
-        doc.text('Price', margin + colProduct + colQty, y + 6, { width: colPrice, align: 'right', lineBreak: false });
-        doc.text('Subtotal', margin + colProduct + colQty + colPrice, y + 6, { width: colSub - 8, align: 'right', lineBreak: false });
+        doc.text('Product', margin + 8, y + 8, { width: colProduct - 8, lineBreak: false });
+        doc.text('Qty', margin + colProduct, y + 8, { width: colQty, align: 'center', lineBreak: false });
+        doc.text('Price', margin + colProduct + colQty, y + 8, { width: colPrice, align: 'right', lineBreak: false });
+        doc.text('Subtotal', margin + colProduct + colQty + colPrice, y + 8, { width: colSub - 8, align: 'right', lineBreak: false });
 
-        y += 22;
+        y += 24;
 
         const items = order.OrderItems || [];
         items.forEach((item, index) => {
-            const rowH = 32;
-            const bg = index % 2 === 0 ? COLORS.white : COLORS.pink50;
-            doc.rect(margin, y, contentWidth, rowH).fill(bg);
-            doc.rect(margin, y + rowH - 1, contentWidth, 1).fill(COLORS.border);
-
             const name = item.Product ? item.Product.name : 'Product';
             const series = item.Product && item.Product.series ? item.Product.series : '';
             const unitPrice = parseFloat(item.unit_price);
             const subtotal = unitPrice * item.quantity;
 
+            // Calculate row height based on content
+            const nameHeight = doc.heightOfString(name, { width: colProduct - 12, font: 'Helvetica-Bold', fontSize: 8, lineBreak: true });
+            const seriesHeight = series ? doc.heightOfString(series, { width: colProduct - 12, font: 'Helvetica', fontSize: 7, lineBreak: true }) : 0;
+            const rowH = Math.max(40, 16 + nameHeight + (series ? 4 + seriesHeight : 0));
+
+            const bg = index % 2 === 0 ? COLORS.white : COLORS.pink50;
+            doc.rect(margin, y, contentWidth, rowH).fill(bg);
+            doc.rect(margin, y + rowH - 1, contentWidth, 1).fill(COLORS.border);
+
+            let productY = y + 10;
+
             doc.fillColor(COLORS.textDark).font('Helvetica-Bold').fontSize(8)
-                .text(name, margin + 8, y + 7, { width: colProduct - 12, height: 10, lineBreak: false });
+                .text(name, margin + 8, productY, { width: colProduct - 12, lineBreak: true });
+            productY += nameHeight + 2;
             if (series) {
                 doc.fillColor(COLORS.textLight).font('Helvetica').fontSize(7)
-                    .text(series, margin + 8, y + 18, { width: colProduct - 12, lineBreak: false });
+                    .text(series, margin + 8, productY, { width: colProduct - 12, lineBreak: true });
             }
 
             doc.fillColor(COLORS.textDark).font('Helvetica').fontSize(8)
-                .text(String(item.quantity), margin + colProduct, y + 11, { width: colQty, align: 'center', lineBreak: false });
-            doc.text(formatPeso(unitPrice), margin + colProduct + colQty, y + 11, { width: colPrice, align: 'right', lineBreak: false });
+                .text(String(item.quantity), margin + colProduct, y + rowH / 2 - 4, { width: colQty, align: 'center', lineBreak: false });
+            doc.text(formatPeso(unitPrice), margin + colProduct + colQty, y + rowH / 2 - 4, { width: colPrice, align: 'right', lineBreak: false });
             doc.font('Helvetica-Bold')
-                .text(formatPeso(subtotal), margin + colProduct + colQty + colPrice, y + 11, { width: colSub - 8, align: 'right', lineBreak: false });
+                .text(formatPeso(subtotal), margin + colProduct + colQty + colPrice, y + rowH / 2 - 4, { width: colSub - 8, align: 'right', lineBreak: false });
 
             y += rowH;
         });
 
-        y += 12;
+        y += 16;
 
         // Totals box
-        const totalsW = 210;
+        const totalsW = 230;
         const totalsX = margin + contentWidth - totalsW;
         const hasDiscount = parseFloat(order.discount_amount || 0) > 0;
-        const totalsH = hasDiscount ? 96 : 78;
+        const totalsH = hasDiscount ? 104 : 84;
         drawRoundedRect(doc, totalsX, y, totalsW, totalsH, 8, COLORS.pink50, COLORS.border);
 
         const subtotal = parseFloat(order.subtotal_amount || order.total_amount || 0);
         const discount = parseFloat(order.discount_amount || 0);
         const total = parseFloat(order.total_amount || 0);
 
-        let ty = y + 12;
+        let ty = y + 16;
         const drawTotalRow = (label, value, bold, valueColor) => {
             doc.fillColor(COLORS.textMedium).font(bold ? 'Helvetica-Bold' : 'Helvetica').fontSize(bold ? 10 : 8)
-                .text(label, totalsX + 12, ty, { width: 80, lineBreak: false });
+                .text(label, totalsX + 14, ty, { width: 90, lineBreak: true });
             doc.fillColor(valueColor || COLORS.textDark).font(bold ? 'Helvetica-Bold' : 'Helvetica').fontSize(bold ? 10 : 8)
-                .text(value, totalsX + 12, ty, { width: totalsW - 24, align: 'right', lineBreak: false });
-            ty += bold ? 20 : 14;
+                .text(value, totalsX + 14, ty, { width: totalsW - 28, align: 'right', lineBreak: false });
+            ty += bold ? 22 : 16;
         };
 
         drawTotalRow('Subtotal', formatPeso(subtotal), false);
@@ -161,7 +170,7 @@ const generateOrderReceipt = (order) => {
             const label = order.discount_code ? `Discount (${order.discount_code})` : 'Discount';
             drawTotalRow(label, `- ${formatPeso(discount)}`, false, COLORS.success);
         }
-        doc.moveTo(totalsX + 12, ty - 2).lineTo(totalsX + totalsW - 12, ty - 2).strokeColor(COLORS.border).lineWidth(1).stroke();
+        doc.moveTo(totalsX + 14, ty - 4).lineTo(totalsX + totalsW - 14, ty - 4).strokeColor(COLORS.border).lineWidth(1).stroke();
         drawTotalRow('Grand Total', formatPeso(total), true, COLORS.pink500);
 
         // Add footer to every page using bufferPages and flushPages
@@ -169,13 +178,13 @@ const generateOrderReceipt = (order) => {
             const pageCount = doc.bufferedPageRange().count;
             for (let i = 0; i < pageCount; i++) {
                 doc.switchToPage(i);
-                const footerH = 44;
+                const footerH = 52;
                 const footerY = pageHeight - margin - footerH;
                 doc.rect(margin, footerY, contentWidth, footerH).fill(COLORS.textDark);
                 doc.fillColor(COLORS.pink100).font('Helvetica').fontSize(8)
-                    .text('Thank you for shopping with The Pop Stop!', margin, footerY + 10, { align: 'center', width: contentWidth, lineBreak: false });
+                    .text('Thank you for shopping with The Pop Stop!', margin, footerY + 14, { align: 'center', width: contentWidth, lineBreak: false });
                 doc.fillColor(COLORS.textLight).fontSize(7)
-                    .text(`© ${new Date().getFullYear()} The Pop Stop. All rights reserved.`, margin, footerY + 26, { align: 'center', width: contentWidth, lineBreak: false });
+                    .text(`© ${new Date().getFullYear()} The Pop Stop. All rights reserved.`, margin, footerY + 30, { align: 'center', width: contentWidth, lineBreak: false });
             }
         };
 

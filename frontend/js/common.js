@@ -1,4 +1,5 @@
 window.API_URL = window.API_URL || 'http://localhost:4000';
+var API_URL = window.API_URL;
 
 const escapeHtml = (text) => {
     if (!text) return '';
@@ -11,7 +12,7 @@ const escapeHtml = (text) => {
 
 const formatPeso = (amount) => `\u20B1${parseFloat(amount || 0).toFixed(2)}`;
 
-const productDetailUrl = (id) => `product-detail?id=${encodeURIComponent(id)}`;
+const productDetailUrl = (id) => `product-detail.html?id=${encodeURIComponent(id)}`;
 
 const getStatusBadge = (status) => {
     if (status === 'In Stock') return '<span class="badge badge-success">In Stock</span>';

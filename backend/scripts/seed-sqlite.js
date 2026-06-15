@@ -215,6 +215,123 @@ async function seedDatabase() {
                 stock_quantity: 30,
                 status: 'In Stock',
                 image_url: 'images/funko1.jpg'
+            },
+            {
+                id: 16,
+                name: 'Funko Marvel: Deadpool & Wolverine - Deadpool Pop! Vinyl Figure',
+                series: 'Marvel',
+                brand: 'Funko',
+                price: 695.00,
+                cost_price: 595.00,
+                sku: 'FK-MAR-002',
+                description: 'Funko Marvel: Deadpool & Wolverine - Deadpool Pop! Vinyl Figure',
+                stock_quantity: 28,
+                status: 'In Stock',
+                image_url: 'images/funko2.jpg'
+            },
+            {
+                id: 17,
+                name: 'Funko DC Comics Batman War Zone - The Joker War Joker Pop! Vinyl Figure',
+                series: 'DC Comics',
+                brand: 'Funko',
+                price: 695.00,
+                cost_price: 595.00,
+                sku: 'FK-DC-001',
+                description: 'Funko DC Comics Batman War Zone - The Joker War Joker Pop! Vinyl Figure',
+                stock_quantity: 25,
+                status: 'In Stock',
+                image_url: 'images/funko3.jpg'
+            },
+            {
+                id: 18,
+                name: 'Funko Bleach Ichigo Kurosaki (FB Shikai) Funko Pop! Vinyl Figure',
+                series: 'Anime',
+                brand: 'Funko',
+                price: 695.00,
+                cost_price: 595.00,
+                sku: 'FK-ANI-001',
+                description: 'Funko Bleach Ichigo Kurosaki (FB Shikai) Funko Pop! Vinyl Figure',
+                stock_quantity: 20,
+                status: 'In Stock',
+                image_url: 'images/funko4.jpg'
+            },
+            {
+                id: 19,
+                name: 'Funko Boruto: Naruto Next Generations Mirai Sarutobi Funko Pop! Vinyl Figure',
+                series: 'Anime',
+                brand: 'Funko',
+                price: 695.00,
+                cost_price: 595.00,
+                sku: 'FK-ANI-002',
+                description: 'Funko Boruto: Naruto Next Generations Mirai Sarutobi Funko Pop! Vinyl Figure',
+                stock_quantity: 22,
+                status: 'In Stock',
+                image_url: 'images/funko5.jpg'
+            },
+            {
+                id: 20,
+                name: 'Funko Spider-Man 2 Game Miles Morales Upgraded Suit Funko Pop! Vinyl Figure',
+                series: 'Games',
+                brand: 'Funko',
+                price: 695.00,
+                cost_price: 595.00,
+                sku: 'FK-GAM-001',
+                description: 'Funko Spider-Man 2 Game Miles Morales Upgraded Suit Funko Pop! Vinyl Figure',
+                stock_quantity: 18,
+                status: 'In Stock',
+                image_url: 'images/funko6.jpg'
+            },
+            {
+                id: 21,
+                name: 'Funko Demon Slayer Tengen Uzui Funko Pop! Vinyl Figure',
+                series: 'Anime',
+                brand: 'Funko',
+                price: 695.00,
+                cost_price: 595.00,
+                sku: 'FK-ANI-003',
+                description: 'Funko Demon Slayer Tengen Uzui Funko Pop! Vinyl Figure',
+                stock_quantity: 24,
+                status: 'In Stock',
+                image_url: 'images/funko7.jpg'
+            },
+            {
+                id: 22,
+                name: 'Funko My Hero Academia Katsuki Bakugo Funko Pop! Vinyl Figure - Previews Exclusive',
+                series: 'Anime',
+                brand: 'Funko',
+                price: 1195.00,
+                cost_price: 1095.00,
+                sku: 'FK-ANI-004',
+                description: 'Funko My Hero Academia Katsuki Bakugo Funko Pop! Vinyl Figure - Previews Exclusive',
+                stock_quantity: 12,
+                status: 'In Stock',
+                image_url: 'images/funko8.jpg'
+            },
+            {
+                id: 23,
+                name: 'Funko Black Clover Asta with Nero Funko Pop! Vinyl Figure',
+                series: 'Anime',
+                brand: 'Funko',
+                price: 695.00,
+                cost_price: 595.00,
+                sku: 'FK-ANI-005',
+                description: 'Funko Black Clover Asta with Nero Funko Pop! Vinyl Figure',
+                stock_quantity: 19,
+                status: 'In Stock',
+                image_url: 'images/funko9.jpg'
+            },
+            {
+                id: 24,
+                name: 'Funko One Piece Onami (Wano) Funko Pop! Vinyl Figure',
+                series: 'Anime',
+                brand: 'Funko',
+                price: 695.00,
+                cost_price: 595.00,
+                sku: 'FK-ANI-006',
+                description: 'Funko One Piece Onami (Wano) Funko Pop! Vinyl Figure',
+                stock_quantity: 21,
+                status: 'In Stock',
+                image_url: 'images/funko10.jpg'
             }
         ];
         await db.Product.bulkCreate(products);
@@ -250,6 +367,51 @@ async function seedDatabase() {
             }
         ];
         await db.Discount.bulkCreate(discounts);
+
+        console.log('Seeding product photos...');
+        const productPhotos = [
+            { product_id: 1, photo_path: 'images/skullpanda1.2.jpg' },
+            { product_id: 1, photo_path: 'images/skullpanda1.3.jpg' },
+            { product_id: 2, photo_path: 'images/skullpanda2.2.jpg' },
+            { product_id: 2, photo_path: 'images/skullpanda2.3.jpg' },
+            { product_id: 3, photo_path: 'images/skullpanda4.2.jpg' },
+            { product_id: 3, photo_path: 'images/skullpanda4.3.jpg' },
+            { product_id: 4, photo_path: 'images/crybaby1.2.jpg' },
+            { product_id: 4, photo_path: 'images/crybaby1.3.jpg' },
+            { product_id: 5, photo_path: 'images/crybaby2.2.jpg' },
+            { product_id: 5, photo_path: 'images/crybaby2.3.jpg' },
+            { product_id: 6, photo_path: 'images/crybaby3.2.jpg' },
+            { product_id: 6, photo_path: 'images/crybaby3.3.jpg' },
+            { product_id: 7, photo_path: 'images/crybaby4.2.jpg' },
+            { product_id: 7, photo_path: 'images/crybaby4.3.jpg' },
+            { product_id: 8, photo_path: 'images/labubu1.2.jpg' },
+            { product_id: 8, photo_path: 'images/labubu1.3.jpg' },
+            { product_id: 9, photo_path: 'images/labubu2.2.jpg' },
+            { product_id: 9, photo_path: 'images/labubu2.3.jpg' },
+            { product_id: 10, photo_path: 'images/labubu3.2.jpg' },
+            { product_id: 10, photo_path: 'images/labubu3.3.jpg' },
+            { product_id: 11, photo_path: 'images/pino1.2.jpg' },
+            { product_id: 11, photo_path: 'images/pino1.3.jpg' },
+            { product_id: 12, photo_path: 'images/pino2.2.jpg' },
+            { product_id: 12, photo_path: 'images/pino2.3.jpg' },
+            { product_id: 13, photo_path: 'images/pino3.2.jpg' },
+            { product_id: 13, photo_path: 'images/pino3.3.jpg' },
+            { product_id: 14, photo_path: 'images/pino4.2.jpg' },
+            { product_id: 14, photo_path: 'images/pino4.3.jpg' },
+            { product_id: 15, photo_path: 'images/funko1.2.jpg' },
+            { product_id: 15, photo_path: 'images/funko1.3.png' },
+            { product_id: 16, photo_path: 'images/funko2.2.jpg' },
+            { product_id: 16, photo_path: 'images/funko2.3.png' },
+            { product_id: 17, photo_path: 'images/funko3.2.png' },
+            { product_id: 18, photo_path: 'images/funko4.2.png' },
+            { product_id: 19, photo_path: 'images/funko5.2.png' },
+            { product_id: 20, photo_path: 'images/funko6.2.png' },
+            { product_id: 21, photo_path: 'images/funko7.2.png' },
+            { product_id: 22, photo_path: 'images/funko8.2.jpg' },
+            { product_id: 23, photo_path: 'images/funko9.2.png' },
+            { product_id: 24, photo_path: 'images/funko10.2.png' }
+        ];
+        await db.ProductPhoto.bulkCreate(productPhotos);
 
         console.log('Database seeded successfully!');
         process.exit(0);

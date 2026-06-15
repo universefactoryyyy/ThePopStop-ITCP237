@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>About Us - The Pop Stop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -16,14 +19,17 @@
 <body>
     <div id="navbar"></div>
     <div class="page-container">
-        <h2 class="mb-5 text-center" style="color: var(--text-dark);"><i class="fas fa-info-circle"></i> About Us</h2>
+        <div class="page-header text-center">
+            <h2><i class="fas fa-info-circle"></i> About Us</h2>
+            <p class="text-muted mt-2">Your destination for premium collectibles culture</p>
+        </div>
 
         <div class="row mb-5">
             <div class="col-md-6 mb-4 mb-md-0">
-                <div class="card h-100">
+                <div class="card h-100 feature-card">
                     <div class="card-body text-center">
-                        <i class="fas fa-heart" style="font-size: 48px; color: var(--pink-500); margin-bottom: 1rem;"></i>
-                        <h3 class="card-title" style="color: var(--pink-500);">Our Story</h3>
+                        <i class="fas fa-heart about-icon"></i>
+                        <h3 class="card-title">Our Story</h3>
                         <p class="card-text">
                             The Pop Stop was founded with a passion for pop culture and collectibles. We believe that every figurine tells a story and brings joy to collectors of all ages.
                         </p>
@@ -31,10 +37,10 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card h-100">
+                <div class="card h-100 feature-card">
                     <div class="card-body text-center">
-                        <i class="fas fa-bullseye" style="font-size: 48px; color: var(--pink-500); margin-bottom: 1rem;"></i>
-                        <h3 class="card-title" style="color: var(--pink-500);">Our Mission</h3>
+                        <i class="fas fa-bullseye about-icon"></i>
+                        <h3 class="card-title">Our Mission</h3>
                         <p class="card-text">
                             To be the most trusted source for high-quality collectibles, providing excellent customer service and a seamless shopping experience.
                         </p>
@@ -43,40 +49,40 @@
             </div>
         </div>
 
-        <h3 class="mb-4" style="color: var(--text-dark); text-align: center;"><i class="fas fa-star"></i> What We Offer</h3>
+        <h3 class="mb-4 text-center">What We Offer</h3>
         <div class="row">
             <div class="col-md-3 col-sm-6 mb-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center feature-card">
                     <div class="card-body">
-                        <i class="fas fa-gem" style="font-size: 36px; color: var(--pink-500); margin-bottom: 0.8rem;"></i>
-                        <h5 class="card-title" style="color: var(--text-dark);">Authentic Products</h5>
+                        <i class="fas fa-gem about-feature-icon"></i>
+                        <h5 class="card-title">Authentic Products</h5>
                         <p class="card-text" style="font-size: 0.9rem;">100% authentic collectible figurines and plushies</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6 mb-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center feature-card">
                     <div class="card-body">
-                        <i class="fas fa-shield-alt" style="font-size: 36px; color: var(--pink-500); margin-bottom: 0.8rem;"></i>
-                        <h5 class="card-title" style="color: var(--text-dark);">Secure Checkout</h5>
+                        <i class="fas fa-shield-alt about-feature-icon"></i>
+                        <h5 class="card-title">Secure Checkout</h5>
                         <p class="card-text" style="font-size: 0.9rem;">Safe and easy payment process</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6 mb-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center feature-card">
                     <div class="card-body">
-                        <i class="fas fa-truck" style="font-size: 36px; color: var(--pink-500); margin-bottom: 0.8rem;"></i>
-                        <h5 class="card-title" style="color: var(--text-dark);">Fast Shipping</h5>
+                        <i class="fas fa-truck about-feature-icon"></i>
+                        <h5 class="card-title">Fast Shipping</h5>
                         <p class="card-text" style="font-size: 0.9rem;">Quick delivery across the Philippines</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 col-sm-6 mb-4">
-                <div class="card h-100 text-center">
+                <div class="card h-100 text-center feature-card">
                     <div class="card-body">
-                        <i class="fas fa-headset" style="font-size: 36px; color: var(--pink-500); margin-bottom: 0.8rem;"></i>
-                        <h5 class="card-title" style="color: var(--text-dark);">Friendly Support</h5>
+                        <i class="fas fa-headset about-feature-icon"></i>
+                        <h5 class="card-title">Friendly Support</h5>
                         <p class="card-text" style="font-size: 0.9rem;">Always here to help you</p>
                     </div>
                 </div>

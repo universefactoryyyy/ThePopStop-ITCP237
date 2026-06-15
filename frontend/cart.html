@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cart - The Pop Stop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -15,34 +18,63 @@
 </head>
 <body>
     <div id="navbar"></div>
-    <div class="page-container">
-        <h2 class="mb-4"><i class="fas fa-shopping-cart"></i> Shopping Cart</h2>
-        <div class="card">
-            <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th style="width:40px;"><input type="checkbox" id="selectAllCart" checked title="Select all"></th>
-                            <th>Image</th>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Qty</th>
-                            <th>Subtotal</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="cartBody"></tbody>
-                </table>
-                <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap">
-                    <div>
-                        <h4 class="mb-0">Selected total: <span id="cartTotal">₱0.00</span></h4>
-                        <small class="text-muted"><span id="selectedCount">0</span> of <span id="cartItemCount">0</span> items selected for checkout</small>
+
+    <main class="site-main">
+        <div class="cart-page-wrap">
+            <div class="page-header">
+                <h2><i class="fas fa-shopping-cart"></i> Shopping Cart</h2>
+            </div>
+
+            <div class="cart-layout">
+                <div class="cart-items-col">
+                    <div class="card cart-panel">
+                        <div class="cart-panel-header">
+                            <input type="checkbox" id="selectAllCart" checked title="Select all">
+                            <label for="selectAllCart" class="mb-0">Select all items</label>
+                        </div>
+                        <div class="cart-panel-body cart-table-wrap">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width:40px;"></th>
+                                        <th>Image</th>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Qty</th>
+                                        <th>Subtotal</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cartBody"></tbody>
+                            </table>
+                        </div>
                     </div>
-                    <button type="button" id="checkoutBtn" class="btn btn-primary mt-2 mt-md-0" style="display:none;"><i class="fas fa-credit-card"></i> Proceed to Checkout</button>
                 </div>
+
+                <aside class="cart-summary-card">
+                    <div class="card cart-panel">
+                        <div class="cart-panel-header">
+                            <h4 class="mb-0">Order Summary</h4>
+                        </div>
+                        <div class="cart-panel-body">
+                            <div class="cart-summary-row">
+                                <span>Items selected</span>
+                                <span><span id="selectedCount">0</span> of <span id="cartItemCount">0</span></span>
+                            </div>
+                            <div class="cart-summary-total">
+                                <span>Total</span>
+                                <span id="cartTotal">₱0.00</span>
+                            </div>
+                            <button type="button" id="checkoutBtn" class="btn btn-primary btn-block" style="display:none;">
+                                <i class="fas fa-credit-card"></i> Proceed to Checkout
+                            </button>
+                        </div>
+                    </div>
+                </aside>
             </div>
         </div>
-    </div>
+    </main>
+
     <div id="footer"></div>
     <script src="js/common.js"></script>
     <script src="js/catalog.js"></script>

@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The Pop Stop - Shop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -17,23 +20,44 @@
 </head>
 <body>
     <div id="navbar"></div>
-    <section class="hero">
-        <div class="hero-shop-name">The Pop Stop</div>
-        <h1>Collectibles & Figurines</h1>
-        <p>Discover POP MART, Funko, and more at The Pop Stop</p>
-        <div class="search-wrap">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search products...">
+
+    <main class="site-main">
+    <section class="hero hero-centered">
+        <div class="hero-content">
+            <h1 class="hero-heading">Where <span class="gradient-word">Collectors</span> Come Alive</h1>
+            <p class="hero-subtext">Discover authentic POP MART, Labubu, Skullpanda, and exclusive collectibles curated for true enthusiasts.</p>
+            <div class="hero-cta-group">
+                <a href="products.html" class="btn btn-primary">Shop Now</a>
+                <a href="products.html" class="btn btn-outline">View Collections</a>
+            </div>
         </div>
     </section>
+
+    <div class="marquee-wrap" aria-hidden="true">
+        <div class="marquee-track">
+            <span>POP MART • LABUBU • SKULLPANDA • PINO JELLY • FUNKO •</span>
+            <span>POP MART • LABUBU • SKULLPANDA • PINO JELLY • FUNKO •</span>
+            <span>POP MART • LABUBU • SKULLPANDA • PINO JELLY • FUNKO •</span>
+            <span>POP MART • LABUBU • SKULLPANDA • PINO JELLY • FUNKO •</span>
+        </div>
+    </div>
+
+    <div class="catalog-search-section">
+        <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search products...">
+        </div>
+    </div>
+
     <div id="brandFilters" class="brand-filters"></div>
     <div id="productGrid" class="product-grid"></div>
     <div id="pagination" class="pagination-wrap"></div>
+    </main>
     <div id="footer"></div>
     <script src="js/common.js"></script>
     <script src="js/catalog.js"></script>
     <script src="js/home.js"></script>
     <script>
-        // Load footer directly for home page
         $(document).ready(function() {
             $('#footer').load('footer.html');
         });

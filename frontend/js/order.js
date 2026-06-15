@@ -1,13 +1,3 @@
-const getToken = () => {
-    const token = sessionStorage.getItem('token');
-    if (!token) {
-        Swal.fire({ icon: 'warning', text: 'You must be logged in.', showConfirmButton: true })
-            .then(() => window.location.href = 'login.html');
-        return null;
-    }
-    return JSON.parse(token);
-};
-
 const formatPesoDiscount = (amount) => `-\u20B1${parseFloat(amount || 0).toFixed(2)}`;
 
 let cartItems = [];
@@ -339,7 +329,7 @@ if ($('#ordersContainer').length) {
         if (order.OrderItems) {
             order.OrderItems.forEach(item => {
                 const reviewBtn = order.status === 'Delivered'
-                    ? `<a href="product-detail?id=${item.product_id}" class="btn btn-secondary btn-sm"><i class="fas fa-star"></i> Write a Review</a>`
+                    ? `<a href="product-detail.html?id=${item.product_id}" class="btn btn-secondary btn-sm"><i class="fas fa-star"></i> Write a Review</a>`
                     : '';
                 itemsHtml += `<li class="order-item-row">
                     <div class="order-item-info">${escapeHtml(item.Product ? item.Product.name : 'Product')} x${item.quantity} @ ${formatPeso(item.unit_price)}</div>

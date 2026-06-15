@@ -1,4 +1,4 @@
-const getToken = () => {
+const getOptionalToken = () => {
     const token = sessionStorage.getItem('token');
     return token ? JSON.parse(token) : null;
 };
@@ -18,7 +18,7 @@ let myReviews = [];
 const loadReviews = (productId) => {
     $.ajax({
         method: 'GET',
-        url: `${API_URL}/api/v1/reviews/product/${productId}`,
+        url: `${window.API_URL}/api/v1/reviews/product/${productId}`,
         success: function (data) {
             if (!data.rows.length) {
                 $('#reviewsList').html('<p class="text-muted">No reviews yet. Be the first to review after your order is delivered!</p>');
@@ -61,7 +61,7 @@ const renderMyReviews = () => {
 };
 
 const loadReviewEligibility = (productId) => {
-    const token = getToken();
+    const token = getOptionalToken();
     if (!token) {
         $('#noReviewMsg').show();
         return;
@@ -69,7 +69,7 @@ const loadReviewEligibility = (productId) => {
 
     $.ajax({
         method: 'GET',
-        url: `${API_URL}/api/v1/reviews/eligible/${productId}`,
+        url: `${window.API_URL}/api/v1/reviews/eligible/${productId}`,
         headers: { Authorization: 'Bearer ' + token },
         success: function (data) {
             eligibleOrders = data.eligibleOrders || [];
@@ -128,16 +128,22 @@ $(document).ready(function () {
 
     $.ajax({
         method: 'GET',
-        url: `${API_URL}/api/v1/products/${encodeURIComponent(productId)}`,
+        url: `${window.API_URL}/api/v1/products/${encodeURIComponent(productId)}`,
         success: function (data) {
             const p = data.result;
+            if (!p) {
+                Swal.fire({ icon: 'error', text: 'Product data could not be loaded.' });
+                return;
+            }
             document.title = `${p.name} - The Pop Stop`;
             $('#productName').text(p.name);
+            $('#breadcrumbName').text(p.name);
             $('#productBrand').text(`${p.series || ''} | ${p.brand || ''}`);
             $('#productSku').text(p.sku);
             $('#productPrice').text(formatPeso(p.price));
-            $('#productDesc').text(p.description || '');
+            $('#productDesc').text(p.description || 'No description available.');
             $('#productStatus').text(p.status);
+            $('#productStatusBadge').html(getStatusBadge(p.status));
             $('#qtyInput').attr('max', p.stock_quantity);
 
             const mainImg = getImageUrl(p.image_url);
@@ -189,7 +195,7 @@ $(document).ready(function () {
         const qty = parseInt($('#qtyInput').val()) || 1;
         $.ajax({
             method: 'POST',
-            url: `${API_URL}/api/v1/cart`,
+            url: `${window.API_URL}/api/v1/cart`,
             headers: { Authorization: 'Bearer ' + authToken, 'Content-Type': 'application/json' },
             data: JSON.stringify({ product_id: parseInt(productId), quantity: qty }),
             success: function () {
@@ -223,7 +229,7 @@ $(document).ready(function () {
 
     $('#reviewForm').on('submit', function (e) {
         e.preventDefault();
-        const token = getToken();
+        const token = getOptionalToken();
         if (!token) {
             Swal.fire({ icon: 'warning', text: 'Please login to submit a review.' })
                 .then(() => window.location.href = 'login.html');

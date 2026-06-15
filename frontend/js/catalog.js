@@ -15,14 +15,17 @@ const buildProductCard = (product) => {
     return `
     <div class="product-card">
         <a href="${detailUrl}" class="product-card-link">
-            <img src="${img}" alt="${name}" onerror="this.src='images/placeholder.svg'">
+            <div class="product-card-image-wrap">
+                <img src="${img}" alt="${name}" onerror="this.src='images/placeholder.svg'">
+                <div class="product-stock-overlay">${getStatusBadge(product.status)}</div>
+                <span class="wishlist-btn" aria-hidden="true"><i class="far fa-heart"></i></span>
+            </div>
         </a>
         <div class="card-body">
             <a href="${detailUrl}" class="product-name-link"><div class="product-name">${name}</div></a>
             <div class="product-card-meta">
                 <div class="product-brand">${series}${series && brand ? ' | ' : ''}${brand}</div>
                 <div class="product-price">${formatPeso(product.price)}</div>
-                <div class="product-stock">${getStatusBadge(product.status)}</div>
             </div>
             <div class="product-actions">
                 <a href="${detailUrl}" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> View Details</a>

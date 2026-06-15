@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Products - The Pop Stop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -18,27 +21,33 @@
 <body>
     <div id="navbar"></div>
     <div class="page-container">
-        <h2 class="mb-3"><i class="fas fa-box-open"></i> All Products</h2>
+        <div class="page-header">
+            <h2><i class="fas fa-box-open"></i> All Products</h2>
+        </div>
+
+        <div class="catalog-search-section">
+            <div class="search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search by name, brand, series...">
+            </div>
+        </div>
+
         <div class="filter-panel">
-            <div class="filter-row">
-                <div class="filter-group">
-                    <label for="searchInput">Search</label>
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name, brand, series...">
-                </div>
-                <div class="filter-group">
+            <div class="filter-bar">
+                <div class="filter-select-wrap">
                     <label for="brandFilter">Brand</label>
                     <select id="brandFilter" class="form-control">
                         <option value="">All Brands</option>
                     </select>
                 </div>
-                <div class="filter-group">
+                <div class="filter-select-wrap">
                     <label for="seriesFilter">Series</label>
                     <select id="seriesFilter" class="form-control">
                         <option value="">All Series</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <label for="statusFilter">Stock Status</label>
+                <div class="filter-select-wrap">
+                    <label for="statusFilter">Stock</label>
                     <select id="statusFilter" class="form-control">
                         <option value="">All Status</option>
                         <option value="In Stock">In Stock</option>
@@ -46,20 +55,19 @@
                         <option value="Out of Stock">Out of Stock</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <label for="sortFilter">Sort By</label>
+                <div class="filter-select-wrap">
+                    <label for="sortFilter">Sort</label>
                     <select id="sortFilter" class="form-control">
                         <option value="">Newest</option>
                         <option value="price_asc">Price: Low to High</option>
                         <option value="price_desc">Price: High to Low</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <button type="button" id="clearFilters" class="btn btn-secondary btn-block"><i class="fas fa-undo"></i> Clear</button>
-                </div>
+                <button type="button" id="clearFilters" class="btn btn-outline btn-sm"><i class="fas fa-undo"></i> Clear</button>
             </div>
         </div>
-        <div id="productGrid" class="product-grid"></div>
+
+        <div id="productGrid" class="product-grid" style="padding-left:0;padding-right:0;"></div>
         <div id="pagination" class="pagination-wrap"></div>
     </div>
     <div id="footer"></div>

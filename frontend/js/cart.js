@@ -1,13 +1,3 @@
-const getToken = () => {
-    const token = sessionStorage.getItem('token');
-    if (!token) {
-        Swal.fire({ icon: 'warning', text: 'You must be logged in.', showConfirmButton: true })
-            .then(() => window.location.href = 'login.html');
-        return null;
-    }
-    return JSON.parse(token);
-};
-
 let cartRows = [];
 
 const getSelectedCartIds = () =>
@@ -45,10 +35,10 @@ const loadCart = () => {
                 const subtotal = parseFloat(p.price) * item.quantity;
                 html += `<tr>
                     <td><input type="checkbox" class="cart-select" data-id="${item.id}" checked></td>
-                    <td><img src="${getImageUrl(p.image_url)}" width="60" height="60" style="object-fit:cover;border-radius:8px;" onerror="this.src='images/placeholder.svg'"></td>
+                    <td><img src="${getImageUrl(p.image_url)}" onerror="this.src='images/placeholder.svg'"></td>
                     <td>${escapeHtml(p.name)}</td>
                     <td>${formatPeso(p.price)}</td>
-                    <td><input type="number" class="form-control qty-input" data-id="${item.id}" value="${item.quantity}" min="1" style="width:80px;"></td>
+                    <td><input type="number" class="form-control qty-input" data-id="${item.id}" value="${item.quantity}" min="1"></td>
                     <td>${formatPeso(subtotal)}</td>
                     <td><button class="btn btn-danger btn-sm remove-btn" data-id="${item.id}"><i class="fas fa-trash"></i></button></td>
                 </tr>`;
@@ -114,7 +104,7 @@ $(document).ready(function () {
         }
         $.ajax({
             method: 'PUT',
-            url: `${API_URL}/api/v1/cart/${id}`,
+            url: `${window.API_URL}/api/v1/cart/${id}`,
             headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
             data: JSON.stringify({ quantity }),
             success: loadCart,
@@ -130,7 +120,7 @@ $(document).ready(function () {
             if (result.isConfirmed) {
                 $.ajax({
                     method: 'DELETE',
-                    url: `${API_URL}/api/v1/cart/${id}`,
+                    url: `${window.API_URL}/api/v1/cart/${id}`,
                     headers: { Authorization: 'Bearer ' + token },
                     success: function () {
                         Swal.fire({ icon: 'success', text: 'Item removed.', timer: 1000, showConfirmButton: false });

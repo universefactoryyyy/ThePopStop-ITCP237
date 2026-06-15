@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Profile - The Pop Stop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -16,12 +19,13 @@
 <body>
     <div id="navbar"></div>
     <div class="page-container">
+        <div class="auth-page" style="padding-top:0;">
         <div class="form-wrap" style="max-width:600px;">
             <h2 class="form-title"><i class="fas fa-user"></i> My Profile</h2>
             <p class="text-center mb-3"><strong id="userName"></strong><br><span id="userEmail" class="text-muted"></span></p>
             <form id="profileForm" enctype="multipart/form-data">
                 <div class="text-center mb-3">
-                    <img id="avatarPreview" src="images/placeholder.svg" width="100" height="100" style="border-radius:50%;object-fit:cover;border:3px solid var(--pastel-border);">
+                    <img id="avatarPreview" src="images/placeholder.svg" width="100" height="100" style="border-radius:50%;object-fit:cover;border:3px solid var(--border);">
                 </div>
                 <div class="form-group">
                     <label for="avatar">Profile Photo</label>
@@ -53,6 +57,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-save"></i> Update Profile</button>
             </form>
+        </div>
         </div>
     </div>
     <div id="footer"></div>
