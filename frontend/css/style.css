@@ -22,6 +22,9 @@ body {
     font-family: 'Segoe UI', system-ui, sans-serif;
     background-color: var(--pastel-bg);
     color: var(--text-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .navbar {
@@ -650,13 +653,13 @@ table.dataTable tbody tr:hover { background: var(--pink-50); }
     font-weight: 600;
 }
 
-.page-container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+.page-container { max-width: 1200px; margin: 0 auto; padding: 1rem; flex: 1; }
 
 .footer {
   background: var(--white);
   border-top: 2px solid var(--pastel-border);
   padding: 2rem 0 1rem;
-  margin-top: 3rem;
+  margin-top: auto;
   position: relative;
   z-index: 1;
 }

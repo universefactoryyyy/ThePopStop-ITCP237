@@ -147,7 +147,7 @@ $(document).ready(function () {
         const token = JSON.parse(sessionStorage.getItem('token'));
         $.ajax({
             method: 'GET',
-            url: `${API_URL}/api/v1/dashboard`,
+            url: `${window.API_URL}/api/v1/dashboard`,
             headers: { Authorization: 'Bearer ' + token },
             success: function (data) {
                 dashboardData = data;

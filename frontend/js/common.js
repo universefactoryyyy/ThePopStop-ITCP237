@@ -1,4 +1,29 @@
-const API_URL = 'http://localhost:4000';
+window.API_URL = window.API_URL || 'http://localhost:4000';
+
+const escapeHtml = (text) => {
+    if (!text) return '';
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+};
+
+const formatPeso = (amount) => `\u20B1${parseFloat(amount || 0).toFixed(2)}`;
+
+const productDetailUrl = (id) => `product-detail?id=${encodeURIComponent(id)}`;
+
+const getStatusBadge = (status) => {
+    if (status === 'In Stock') return '<span class="badge badge-success">In Stock</span>';
+    if (status === 'Low Stock') return '<span class="badge badge-warning">Low Stock</span>';
+    return '<span class="badge badge-danger">Out of Stock</span>';
+};
+
+const getImageUrl = (path) => {
+    if (!path) return 'images/placeholder.svg';
+    if (path.startsWith('http') || path.startsWith('uploads/')) return `${window.API_URL}/${path}`;
+    return path;
+};
 
 const getToken = () => {
     const token = sessionStorage.getItem('token');
@@ -23,7 +48,7 @@ const initNavbar = (basePath) => {
             $('#authLinks').hide();
             $('#userLinks').show();
             if (user.avatar) {
-                $('#userAvatar').attr('src', API_URL + user.avatar);
+                $('#userAvatar').attr('src', window.API_URL + user.avatar);
             }
             if (user.role === 'admin') $('#adminLink').show();
             updateCartBadge(prefix);
@@ -43,7 +68,7 @@ const updateCartBadge = (basePath) => {
     if (!token) return;
     $.ajax({
         method: 'GET',
-        url: `${API_URL}/api/v1/cart`,
+        url: `${window.API_URL}/api/v1/cart`,
         headers: { Authorization: 'Bearer ' + JSON.parse(token) },
         success: function (data) {
             const count = data.rows.reduce((sum, item) => sum + item.quantity, 0);

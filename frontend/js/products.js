@@ -67,7 +67,7 @@ const applyFilters = () => {
 const loadProducts = () => {
     $.ajax({
         method: 'GET',
-        url: `${API_URL}/api/v1/products`,
+        url: `${window.API_URL}/api/v1/products`,
         success: function (data) {
             allProducts = data.rows;
             filteredProducts = [...allProducts];

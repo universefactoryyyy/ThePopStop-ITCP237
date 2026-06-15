@@ -1,9 +1,4 @@
-const API_URL = 'http://localhost:4000';
 
-const getUser = () => {
-    const user = sessionStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
-};
 
 const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -25,7 +20,7 @@ $(document).ready(function () {
 
             $.ajax({
                 method: 'POST',
-                url: `${API_URL}/api/v1/login`,
+                url: `${window.API_URL}/api/v1/login`,
                 contentType: 'application/json',
                 data: JSON.stringify({ email, password }),
                 success: function (data) {
@@ -121,7 +116,7 @@ $(document).ready(function () {
 
             $.ajax({
                 method: 'PUT',
-                url: `${API_URL}/api/v1/profile`,
+                url: `${window.API_URL}/api/v1/profile`,
                 data: formData,
                 contentType: false,
                 processData: false,

@@ -97,7 +97,7 @@ const loadCartSummary = () => {
 
     $.ajax({
         method: 'GET',
-        url: `${API_URL}/api/v1/cart`,
+        url: `${window.API_URL}/api/v1/cart`,
         headers: { Authorization: 'Bearer ' + token },
         success: function (data) {
             const allItems = data.rows || [];
@@ -391,7 +391,7 @@ if ($('#ordersContainer').length) {
 
         $.ajax({
             method: 'GET',
-            url: `${API_URL}/api/v1/orders/my`,
+            url: `${window.API_URL}/api/v1/orders/my`,
             headers: { Authorization: 'Bearer ' + token },
             success: function (data) {
                 allOrders = data.rows;

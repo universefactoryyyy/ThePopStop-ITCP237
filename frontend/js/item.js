@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:4000';
+window.API_URL = window.API_URL || 'http://localhost:4000';
 
 const getToken = () => {
     const token = sessionStorage.getItem('token');
@@ -20,9 +20,9 @@ const checkAdmin = () => {
 const getImageUrl = (path) => {
     if (!path) return '../images/placeholder.svg';
     if (path.startsWith('http')) return path;
-    if (path.startsWith('uploads/')) return `${API_URL}/${path}`;
+    if (path.startsWith('uploads/')) return `${window.API_URL}/${path}`;
     if (path.startsWith('images/')) return `../${path}`;
-    return `${API_URL}/${path}`;
+    return `${window.API_URL}/${path}`;
 };
 
 const renderPhotoItem = (src, label) => `
@@ -65,7 +65,7 @@ const uploadAdditionalPhotos = (productId, files, token, onComplete) => {
     Array.from(files).forEach(f => formData.append('photos', f));
     $.ajax({
         method: 'POST',
-        url: `${API_URL}/api/v1/products/${productId}/photos`,
+        url: `${window.API_URL}/api/v1/products/${productId}/photos`,
         data: formData,
         contentType: false,
         processData: false,
@@ -221,7 +221,7 @@ $(document).ready(function () {
             if (result.isConfirmed) {
                 $.ajax({
                     method: 'DELETE',
-                    url: `${API_URL}/api/v1/products/${id}`,
+                    url: `${window.API_URL}/api/v1/products/${id}`,
                     headers: { Authorization: 'Bearer ' + token },
                     success: function () {
                         productTable.ajax.reload();

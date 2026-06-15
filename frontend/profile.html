@@ -56,32 +56,13 @@
         </div>
     </div>
     <div id="footer"></div>
+    <script src="js/common.js"></script>
+    <script src="js/user.js"></script>
     <script>
-        // Manually load navbar first to ensure it's available
         $(document).ready(function() {
-            $('#navbar').load('header.html', function() {
-                // Initialize after load is complete
-                const user = JSON.parse(sessionStorage.getItem('user'));
-                if (user) {
-                    $('#authLinks').hide();
-                    $('#userLinks').show();
-                    if (user.avatar) {
-                        $('#userAvatar').attr('src', 'http://localhost:4000' + user.avatar);
-                    }
-                    if (user.role === 'admin') {
-                        $('#adminLink').show();
-                    }
-                    $('#logoutBtn').on('click', function(e) {
-                        e.preventDefault();
-                        sessionStorage.clear();
-                        window.location.href = 'index.html';
-                    });
-                }
-            });
-            // Load footer too
+            initNavbar();
             $('#footer').load('footer.html');
         });
     </script>
-    <script src="js/user.js"></script>
 </body>
 </html>

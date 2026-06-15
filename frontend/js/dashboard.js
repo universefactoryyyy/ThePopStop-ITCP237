@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:4000';
+window.API_URL = window.API_URL || 'http://localhost:4000';
 
 const getToken = () => {
     const token = sessionStorage.getItem('token');

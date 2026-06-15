@@ -70,7 +70,7 @@ $(document).ready(function () {
     $('#searchInput').autocomplete({
         source: function (request, response) {
             $.ajax({
-                url: `${API_URL}/api/v1/products/search`,
+                url: `${window.API_URL}/api/v1/products/search`,
                 data: { q: request.term },
                 success: function (data) {
                     response(data.rows.map(p => ({

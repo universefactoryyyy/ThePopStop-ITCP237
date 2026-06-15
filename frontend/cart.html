@@ -44,7 +44,14 @@
         </div>
     </div>
     <div id="footer"></div>
+    <script src="js/common.js"></script>
     <script src="js/catalog.js"></script>
     <script src="js/cart.js"></script>
+    <script>
+        $(document).ready(function() {
+            initNavbar();
+            $('#footer').load('footer.html');
+        });
+    </script>
 </body>
 </html>

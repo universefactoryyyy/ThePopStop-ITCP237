@@ -40,13 +40,13 @@
         </main>
     </div>
     <script>
-    const API_URL = 'http://localhost:4000';
+    window.API_URL = window.API_URL || 'http://localhost:4000';
     $(document).ready(function() {
         const user = JSON.parse(sessionStorage.getItem('user') || 'null');
         if (!user || user.role !== 'admin') { window.location.href = '../index.html'; return; }
         const token = JSON.parse(sessionStorage.getItem('token'));
         const table = $('#reviewsTable').DataTable({
-            ajax: { url: `${API_URL}/api/v1/reviews`, dataSrc: 'rows', headers: { Authorization: 'Bearer ' + token } },
+            ajax: { url: `${window.API_URL}/api/v1/reviews`, dataSrc: 'rows', headers: { Authorization: 'Bearer ' + token } },
             columns: [
                 { data: 'id' },
                 { data: 'Product', render: p => p ? p.name : 'N/A' },
@@ -60,11 +60,11 @@
             ]
         });
         $(document).on('click', '.approve-btn', function() {
-            $.ajax({ method:'PUT', url:`${API_URL}/api/v1/reviews/${$(this).data('id')}/approve`, headers:{Authorization:'Bearer '+token}, success:()=>{ table.ajax.reload(); Swal.fire({icon:'success',text:'Updated',timer:1000,showConfirmButton:false}); } });
+            $.ajax({ method:'PUT', url:`${window.API_URL}/api/v1/reviews/${$(this).data('id')}/approve`, headers:{Authorization:'Bearer '+token}, success:()=>{ table.ajax.reload(); Swal.fire({icon:'success',text:'Updated',timer:1000,showConfirmButton:false}); } });
         });
         $(document).on('click', '.delete-btn', function() {
             Swal.fire({title:'Delete review?',icon:'warning',showCancelButton:true}).then(r=>{
-                if(r.isConfirmed) $.ajax({ method:'DELETE', url:`${API_URL}/api/v1/reviews/${$(this).data('id')}`, headers:{Authorization:'Bearer '+token}, success:()=>{ table.ajax.reload(); Swal.fire({icon:'success',text:'Deleted',timer:1000,showConfirmButton:false}); } });
+                if(r.isConfirmed) $.ajax({ method:'DELETE', url:`${window.API_URL}/api/v1/reviews/${$(this).data('id')}`, headers:{Authorization:'Bearer '+token}, success:()=>{ table.ajax.reload(); Swal.fire({icon:'success',text:'Deleted',timer:1000,showConfirmButton:false}); } });
             });
         });
     });

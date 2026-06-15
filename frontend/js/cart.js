@@ -34,7 +34,7 @@ const loadCart = () => {
 
     $.ajax({
         method: 'GET',
-        url: `${API_URL}/api/v1/cart`,
+        url: `${window.API_URL}/api/v1/cart`,
         headers: { Authorization: 'Bearer ' + token },
         success: function (data) {
             cartRows = data.rows || [];

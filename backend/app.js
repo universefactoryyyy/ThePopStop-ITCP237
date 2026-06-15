@@ -26,9 +26,6 @@ app.use('/api/v1', carts);
 app.use('/api/v1', dashboard);
 app.use('/api/v1', discounts);
 
-// Serve index.html for all other routes
-app.get('/{*path}', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
-});
+
 
 module.exports = app;

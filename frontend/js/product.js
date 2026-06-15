@@ -244,7 +244,7 @@ $(document).ready(function () {
         const isEdit = !!editId;
         $.ajax({
             method: isEdit ? 'PUT' : 'POST',
-            url: isEdit ? `${API_URL}/api/v1/reviews/${editId}` : `${API_URL}/api/v1/reviews`,
+            url: isEdit ? `${window.API_URL}/api/v1/reviews/${editId}` : `${window.API_URL}/api/v1/reviews`,
             headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
             data: JSON.stringify(isEdit
                 ? { rating, review_text }
