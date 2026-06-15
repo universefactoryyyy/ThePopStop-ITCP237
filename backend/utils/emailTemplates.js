@@ -79,11 +79,17 @@ const buildOrderTotals = (order) => {
 };
 
 exports.orderConfirmationEmail = (user, order) => {
+    const receiptUrl = `${process.env.BASE_URL || 'http://localhost:4000'}/api/v1/orders/${order.id}/receipt`;
     const body = `
       <p style="margin:0 0 12px;font-size:15px;">Dear <strong>${user.name}</strong>,</p>
       <p style="margin:0 0 20px;font-size:15px;">Thank you for your order! Your order <strong>#${order.id}</strong> has been placed successfully.</p>
       <div style="background:#ffe0ec;border-left:4px solid #e8447a;padding:16px 20px;border-radius:8px;margin-bottom:20px;">
         <strong style="color:#e8447a;">Status: ${order.status}</strong>
+      </div>
+      <div style="text-align:center;margin-bottom:24px;">
+        <a href="${receiptUrl}" style="display:inline-block;background:linear-gradient(135deg,#e8447a 0%,#ff5c8a 100%);color:#ffffff;font-weight:bold;padding:14px 32px;border-radius:8px;text-decoration:none;font-size:15px;">
+          &#128196; Download Receipt PDF
+        </a>
       </div>
       ${buildOrderItemsTable(order)}
       ${buildOrderTotals(order)}
@@ -98,11 +104,17 @@ exports.orderConfirmationEmail = (user, order) => {
 };
 
 exports.orderStatusUpdateEmail = (user, order, status) => {
+    const receiptUrl = `${process.env.BASE_URL || 'http://localhost:4000'}/api/v1/orders/${order.id}/receipt`;
     const body = `
       <p style="margin:0 0 12px;font-size:15px;">Dear <strong>${user.name}</strong>,</p>
       <p style="margin:0 0 20px;font-size:15px;">Your order <strong>#${order.id}</strong> status has been updated to:</p>
       <div style="background:#ffe0ec;border-left:4px solid #e8447a;padding:16px 20px;border-radius:8px;margin-bottom:20px;">
         <strong style="color:#e8447a;font-size:16px;">Status: ${status}</strong>
+      </div>
+      <div style="text-align:center;margin-bottom:24px;">
+        <a href="${receiptUrl}" style="display:inline-block;background:linear-gradient(135deg,#e8447a 0%,#ff5c8a 100%);color:#ffffff;font-weight:bold;padding:14px 32px;border-radius:8px;text-decoration:none;font-size:15px;">
+          &#128196; Download Receipt PDF
+        </a>
       </div>
       ${buildOrderItemsTable(order)}
       ${buildOrderTotals(order)}

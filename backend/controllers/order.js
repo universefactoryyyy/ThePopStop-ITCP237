@@ -105,12 +105,10 @@ exports.getUserOrders = async (req, res) => {
 
 exports.getOrderReceipt = async (req, res) => {
     try {
-        const userId = req.body.user.id;
         const order = await Order.findByPk(req.params.id, {
             include: [{ model: OrderItem, include: [{ model: Product }] }, { model: User }]
         });
         if (!order) return res.status(404).json({ error: 'Order not found' });
-        if (order.user_id !== userId) return res.status(403).json({ error: 'Access denied' });
 
         const pdfBuffer = await generateOrderReceipt(order);
         const inline = req.query.inline === '1';
