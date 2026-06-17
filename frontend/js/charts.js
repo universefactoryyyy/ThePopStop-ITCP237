@@ -98,18 +98,31 @@ const renderDashboardCharts = (data) => {
 };
 
 const renderReportsCharts = (data, startDate, endDate) => {
-    let orders = data.orders;
+    console.log('renderReportsCharts called with:', { data, startDate, endDate });
+    let orders = data.orders || [];
+    console.log('Initial orders:', orders);
     if (startDate && endDate) {
         orders = orders.filter(o => {
             const d = o.createdAt.split('T')[0];
             return d >= startDate && d <= endDate;
         });
+        console.log('Filtered orders:', orders);
     }
 
-    const dayLabels = orders.map(o => new Date(o.createdAt).toLocaleDateString());
-    const dayValues = orders.map(o => parseFloat(o.total_amount));
+    // Group orders by day
+    const salesByDay = {};
+    orders.forEach(o => {
+        const key = new Date(o.createdAt).toLocaleDateString();
+        salesByDay[key] = (salesByDay[key] || 0) + parseFloat(o.total_amount);
+    });
+    const dayLabels = Object.keys(salesByDay);
+    const dayValues = Object.values(salesByDay);
+    console.log('Sales by day:', salesByDay);
+
     const monthData = getRevenueByMonth(orders);
-    const brandData = getBrandSales(data.brandSales);
+    console.log('Month data:', monthData);
+    const brandData = getBrandSales(data.brandSales || []);
+    console.log('Brand data:', brandData);
 
     if (barChartInstance) barChartInstance.destroy();
     barChartInstance = new Chart(document.getElementById('reportBarChart'), {
@@ -142,23 +155,4 @@ const renderReportsCharts = (data, startDate, endDate) => {
     });
 };
 
-$(document).ready(function () {
-    if ($('#reportBarChart').length) {
-        const token = JSON.parse(sessionStorage.getItem('token'));
-        $.ajax({
-            method: 'GET',
-            url: `${window.API_URL}/api/v1/dashboard`,
-            headers: { Authorization: 'Bearer ' + token },
-            success: function (data) {
-                dashboardData = data;
-                renderReportsCharts(data);
-            }
-        });
 
-        $('#filterReports').on('click', function () {
-            if (dashboardData) {
-                renderReportsCharts(dashboardData, $('#startDate').val(), $('#endDate').val());
-            }
-        });
-    }
-});

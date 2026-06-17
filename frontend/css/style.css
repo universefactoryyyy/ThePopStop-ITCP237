@@ -280,8 +280,8 @@ a:hover { color: #e8356a; text-decoration: none; }
 
 /* Dropdown */
 .dropdown { position: relative; display: inline-block; }
-.dropdown:hover .dropdown-menu { display: block !important; }
-.dropdown:hover .dropdown-toggle .fa-chevron-down { transform: rotate(180deg); }
+.dropdown:hover .dropdown-menu, .dropdown-menu.show { display: block !important; }
+.dropdown:hover .dropdown-toggle .fa-chevron-down, .dropdown-menu.show + .dropdown-toggle .fa-chevron-down, .dropdown:has(.dropdown-menu.show) .dropdown-toggle .fa-chevron-down { transform: rotate(180deg); }
 
 .dropdown-toggle {
     display: flex;

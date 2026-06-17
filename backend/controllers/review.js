@@ -16,7 +16,7 @@ const validateDeliveredOrder = async (userId, productId, orderId) => {
 exports.createReview = async (req, res) => {
     try {
         const userId = req.body.user.id;
-        const { product_id, order_id, rating, review_text } = req.body;
+        const { product_id, order_id, rating, review_text, is_anonymous } = req.body;
         if (!product_id || !order_id || !rating) return res.status(400).json({ error: 'Missing required fields' });
         if (rating < 1 || rating > 5) return res.status(400).json({ error: 'Rating must be 1-5' });
 
@@ -27,7 +27,7 @@ exports.createReview = async (req, res) => {
         if (existing) return res.status(409).json({ error: 'You already reviewed this order for this product' });
 
         const cleanText = filterProfanity(review_text);
-        const review = await Review.create({ product_id, user_id: userId, order_id, rating, review_text: cleanText });
+        const review = await Review.create({ product_id, user_id: userId, order_id, rating, review_text: cleanText, is_anonymous: is_anonymous ? 1 : 0 });
         return res.status(201).json({ success: true, review });
     } catch (err) {
         console.log(err);
@@ -94,7 +94,7 @@ exports.updateReview = async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.body.user.id;
-        const { rating, review_text } = req.body;
+        const { rating, review_text, is_anonymous } = req.body;
 
         const review = await Review.findOne({ where: { id, user_id: userId } });
         if (!review) return res.status(404).json({ error: 'Review not found' });
@@ -103,9 +103,12 @@ exports.updateReview = async (req, res) => {
         if (!order) return res.status(403).json({ error: 'You can only edit reviews for delivered orders' });
 
         const cleanText = review_text !== undefined ? filterProfanity(review_text) : review.review_text;
-        await review.update({ rating: rating || review.rating, review_text: cleanText });
+        const updateData = { rating: rating || review.rating, review_text: cleanText, is_approved: 0 };
+        if (is_anonymous !== undefined) updateData.is_anonymous = is_anonymous ? 1 : 0;
+        await review.update(updateData);
         return res.status(200).json({ success: true, review });
     } catch (err) {
+        console.log(err);
         return res.status(500).json({ error: 'Error updating review' });
     }
 };

@@ -97,8 +97,30 @@ $(document).ready(function () {
 
         // Load user's current avatar
         if (user.avatar) {
-            $('#avatarPreview').attr('src', API_URL + user.avatar);
+            $('#avatarPreview').attr('src', API_URL + '/' + user.avatar);
         }
+
+        // Fetch profile data from backend to fill form fields
+        $.ajax({
+            method: 'GET',
+            url: `${window.API_URL}/api/v1/profile`,
+            headers: { Authorization: 'Bearer ' + JSON.parse(token) },
+            success: function (data) {
+                if (data.customer) {
+                    $('#fname').val(data.customer.fname || '');
+                    $('#lname').val(data.customer.lname || '');
+                    $('#addressline').val(data.customer.addressline || '');
+                    $('#zipcode').val(data.customer.zipcode || '');
+                    $('#phone').val(data.customer.phone || '');
+                    if (data.customer.image_path) {
+                        $('#avatarPreview').attr('src', API_URL + '/' + data.customer.image_path);
+                    }
+                }
+            },
+            error: function (xhr) {
+                console.error('Error fetching profile:', xhr);
+            }
+        });
 
         $('#avatar').on('change', function () {
             const file = this.files[0];

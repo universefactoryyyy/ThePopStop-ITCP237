@@ -2,11 +2,32 @@ const db = require('../models');
 const Product = db.Product;
 const ProductPhoto = db.ProductPhoto;
 const { Op } = require('sequelize');
+const jwt = require('jsonwebtoken');
+
+const getProductStatus = (stock) => {
+    if (stock <= 0) return 'Out of Stock';
+    if (stock <= 5) return 'Low Stock';
+    return 'In Stock';
+};
 
 exports.getAllProducts = async (req, res) => {
     try {
         const { search, brand, series, status, sort } = req.query;
-        const where = { deleted_at: null };
+        // Check if user is admin
+        let isAdmin = false;
+        if (req.header('Authorization')) {
+            try {
+                const token = req.header('Authorization').split(' ')[1];
+                if (token) {
+                    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                    const user = await db.User.findByPk(decoded.id);
+                    isAdmin = user && user.role === 'admin';
+                }
+            } catch (e) {
+                isAdmin = false;
+            }
+        }
+        const where = isAdmin ? {} : { deleted_at: null };
         if (search) where[Op.or] = [{ name: { [Op.like]: `%${search}%` } }, { brand: { [Op.like]: `%${search}%` } }, { series: { [Op.like]: `%${search}%` } }];
         if (brand) where.brand = brand;
         if (series) where.series = series;
@@ -77,10 +98,13 @@ exports.createProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, series, brand, price, cost_price, sku, description, stock_quantity, status } = req.body;
+        const { name, series, brand, price, cost_price, sku, description, stock_quantity } = req.body;
         let image_url = req.file ? req.file.path.replace(/\\/g, '/') : undefined;
 
-        const updateData = { name, series, brand, price, cost_price, sku, description, stock_quantity, status };
+        const updateData = { name, series, brand, price, cost_price, sku, description, stock_quantity };
+        if (stock_quantity !== undefined) {
+            updateData.status = getProductStatus(stock_quantity);
+        }
         if (image_url) updateData.image_url = image_url;
 
         await Product.update(updateData, { where: { id } });
@@ -98,6 +122,16 @@ exports.deleteProduct = async (req, res) => {
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: 'Error deleting product' });
+    }
+};
+
+exports.restoreProduct = async (req, res) => {
+    try {
+        await Product.update({ deleted_at: null }, { where: { id: req.params.id } });
+        return res.status(200).json({ success: true, message: 'Product restored' });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Error restoring product' });
     }
 };
 

@@ -28,7 +28,7 @@ const loadReviews = (productId) => {
             data.rows.forEach(r => {
                 html += `<div class="review-item">
                     <div class="stars">${renderStars(r.rating)}</div>
-                    <strong>${escapeHtml(r.User ? r.User.name : 'User')}</strong>
+                    <strong>${escapeHtml(r.is_anonymous ? 'Anonymous User' : (r.User ? r.User.name : 'User'))}</strong>
                     <small class="text-muted ml-2">${new Date(r.createdAt).toLocaleDateString()}</small>
                     <p class="mt-1">${escapeHtml(r.review_text || '')}</p>
                 </div>`;
@@ -49,6 +49,7 @@ const renderMyReviews = () => {
             <div>
                 <div class="stars">${renderStars(r.rating)}</div>
                 <small class="text-muted">Order #${r.order_id}</small>
+                ${!r.is_approved ? '<span class="badge badge-warning ml-2">Waiting for Approval</span>' : '<span class="badge badge-success ml-2">Approved</span>'}
                 <p class="mt-1 mb-0">${escapeHtml(r.review_text || '')}</p>
             </div>
             <button type="button" class="btn btn-sm btn-secondary edit-review-btn" data-id="${r.id}">
@@ -104,6 +105,7 @@ const resetReviewForm = () => {
     $('#reviewSubmitBtn').html('<i class="fas fa-paper-plane"></i> Submit Review');
     $('#cancelEditBtn').hide();
     $('#reviewForm')[0].reset();
+    $('#reviewAnonymous').prop('checked', false);
     if (eligibleOrders.length) {
         let opts = '<option value="">Select delivered order</option>';
         eligibleOrders.forEach(o => {
@@ -160,8 +162,10 @@ $(document).ready(function () {
 
             if (p.status === 'Out of Stock') {
                 $('#addCartBtn').prop('disabled', true).addClass('btn-disabled').html('<i class="fas fa-ban"></i> Out of Stock');
+                $('.product-action-btns .btn-outline').addClass('btn-disabled').attr('href', '#').attr('onclick', 'return false;').css('pointer-events', 'none');
             } else {
                 $('#addCartBtn').prop('disabled', false).removeClass('btn-disabled').html('<i class="fas fa-cart-plus"></i> Add to Cart');
+                $('.product-action-btns .btn-outline').removeClass('btn-disabled').attr('href', 'cart.html').removeAttr('onclick').css('pointer-events', 'auto');
             }
         },
         error: function (xhr) {
@@ -183,28 +187,46 @@ $(document).ready(function () {
         $(this).addClass('active');
     });
 
-    $('#addCartBtn').on('click', function () {
-        if ($(this).prop('disabled')) return;
+    const addToCart = () => {
         const token = sessionStorage.getItem('token');
         if (!token) {
             Swal.fire({ icon: 'warning', text: 'Please login to add items to cart.' })
                 .then(() => window.location.href = 'login.html');
-            return;
+            return null;
         }
         const authToken = JSON.parse(token);
         const qty = parseInt($('#qtyInput').val()) || 1;
-        $.ajax({
+        return $.ajax({
             method: 'POST',
             url: `${window.API_URL}/api/v1/cart`,
             headers: { Authorization: 'Bearer ' + authToken, 'Content-Type': 'application/json' },
-            data: JSON.stringify({ product_id: parseInt(productId), quantity: qty }),
-            success: function () {
-                Swal.fire({ icon: 'success', text: 'Added to cart!', timer: 1500, showConfirmButton: false });
-            },
-            error: function () {
-                Swal.fire({ icon: 'error', text: 'Failed to add to cart.' });
-            }
+            data: JSON.stringify({ product_id: parseInt(productId), quantity: qty })
         });
+    };
+
+    $('#addCartBtn').on('click', function () {
+        if ($(this).prop('disabled')) return;
+        const addPromise = addToCart();
+        if (addPromise) {
+            addPromise.then(() => {
+                Swal.fire({ icon: 'success', text: 'Added to cart!', timer: 1500, showConfirmButton: false });
+            }).catch(() => {
+                Swal.fire({ icon: 'error', text: 'Failed to add to cart.' });
+            });
+        }
+    });
+
+    $('#buyNowBtn').on('click', function (e) {
+        e.preventDefault();
+        if ($(this).hasClass('btn-disabled') || $(this).css('pointer-events') === 'none') return;
+        const addPromise = addToCart();
+        if (addPromise) {
+            addPromise.then(() => {
+                window.location.href = 'cart.html';
+            }).catch(() => {
+                Swal.fire({ icon: 'error', text: 'Failed to add to cart.' });
+            });
+        }
     });
 
     $(document).on('click', '.edit-review-btn', function () {
@@ -213,6 +235,7 @@ $(document).ready(function () {
         if (!review) return;
         const rating = review.rating;
         const text = review.review_text || '';
+        const isAnonymous = review.is_anonymous;
         const orderId = review.order_id;
         $('#editReviewId').val(id);
         $('#reviewFormTitle').text('Edit Your Review');
@@ -220,6 +243,7 @@ $(document).ready(function () {
         $('#cancelEditBtn').show();
         $('#reviewRating').val(rating);
         $('#reviewText').val(text);
+        $('#reviewAnonymous').prop('checked', isAnonymous);
         $('#reviewOrderId').html(`<option value="${orderId}" selected>Order #${orderId}</option>`).prop('disabled', true);
         $('#reviewFormWrap').show();
         $('html, body').animate({ scrollTop: $('#reviewFormWrap').offset().top - 80 }, 300);
@@ -239,6 +263,7 @@ $(document).ready(function () {
         const editId = $('#editReviewId').val();
         const rating = parseInt($('#reviewRating').val());
         const review_text = $('#reviewText').val().trim();
+        const is_anonymous = $('#reviewAnonymous').prop('checked');
         const order_id = parseInt($('#reviewOrderId').val());
 
         let valid = true;
@@ -253,8 +278,8 @@ $(document).ready(function () {
             url: isEdit ? `${window.API_URL}/api/v1/reviews/${editId}` : `${window.API_URL}/api/v1/reviews`,
             headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
             data: JSON.stringify(isEdit
-                ? { rating, review_text }
-                : { product_id: parseInt(productId), order_id, rating, review_text }),
+                ? { rating, review_text, is_anonymous }
+                : { product_id: parseInt(productId), order_id, rating, review_text, is_anonymous }),
             success: function () {
                 Swal.fire({ icon: 'success', text: isEdit ? 'Review updated!' : 'Review submitted!', timer: 1500, showConfirmButton: false });
                 resetReviewForm();

@@ -110,15 +110,16 @@ $(document).ready(function () {
             { data: 'price', render: (d) => '₱' + parseFloat(d).toFixed(2) },
             { data: 'stock_quantity' },
             { data: 'status' },
-            {
-                data: null,
-                render: (data) => `
+            { data: null, render: (data) => `
                     <div class="admin-actions">
-                        <button class="btn btn-secondary btn-sm edit-btn" data-id="${data.id}" title="Edit"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="${data.id}" title="Delete"><i class="fas fa-trash"></i></button>
-                        <button class="btn btn-primary btn-sm photos-btn" data-id="${data.id}" title="Photos"><i class="fas fa-images"></i></button>
-                    </div>`
-            }
+                        ${data.deleted_at ? '' : `<button class="btn btn-secondary btn-sm edit-btn" data-id="${data.id}" title="Edit"><i class="fas fa-edit"></i></button>`}
+                        ${data.deleted_at ? 
+                            `<button class="btn btn-success btn-sm restore-btn" data-id="${data.id}" title="Restore"><i class="fas fa-undo"></i></button>` : 
+                            `<button class="btn btn-danger btn-sm delete-btn" data-id="${data.id}" title="Delete"><i class="fas fa-trash"></i></button>`
+                        }
+                        ${data.deleted_at ? '' : `<button class="btn btn-primary btn-sm photos-btn" data-id="${data.id}" title="Photos"><i class="fas fa-images"></i></button>`}
+                    </div>` },
+                { data: 'deleted_at', render: (d) => d ? '<span class="badge badge-danger">Deleted</span>' : '' }
         ]
     });
 
@@ -226,6 +227,23 @@ $(document).ready(function () {
                     success: function () {
                         productTable.ajax.reload();
                         Swal.fire({ icon: 'success', text: 'Product deleted.', timer: 1500, showConfirmButton: false });
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '.restore-btn', function () {
+        const id = $(this).data('id');
+        Swal.fire({ title: 'Restore product?', icon: 'question', showCancelButton: true }).then(result => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    method: 'PUT',
+                    url: `${window.API_URL}/api/v1/products/${id}/restore`,
+                    headers: { Authorization: 'Bearer ' + token },
+                    success: function () {
+                        productTable.ajax.reload();
+                        Swal.fire({ icon: 'success', text: 'Product restored.', timer: 1500, showConfirmButton: false });
                     }
                 });
             }

@@ -45,11 +45,14 @@ const initNavbar = (basePath) => {
     const prefix = basePath || '';
     $('#navbar').load(prefix + 'header.html', function () {
         const user = getUser();
+        console.log('initNavbar - user:', user);
         if (user) {
             $('#authLinks').hide();
             $('#userLinks').show();
             if (user.avatar) {
-                $('#userAvatar').attr('src', window.API_URL + user.avatar);
+                const avatarUrl = window.API_URL + '/' + user.avatar;
+                console.log('Setting avatar URL:', avatarUrl);
+                $('#userAvatar').attr('src', avatarUrl);
             }
             if (user.role === 'admin') $('#adminLink').show();
             updateCartBadge(prefix);
@@ -58,6 +61,20 @@ const initNavbar = (basePath) => {
             e.preventDefault();
             sessionStorage.clear();
             window.location.href = prefix + 'index.html';
+        });
+
+        // Handle user dropdown toggle
+        $('#userDropdownToggle').on('click', function(e) {
+            e.stopPropagation();
+            const $menu = $('#userDropdownMenu');
+            $menu.toggleClass('show');
+        });
+
+        // Close dropdown when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#userDropdown').length) {
+                $('#userDropdownMenu').removeClass('show');
+            }
         });
     });
     // Load footer

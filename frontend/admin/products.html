@@ -41,7 +41,7 @@
             </div>
             <table id="productTable" class="table table-striped">
                 <thead>
-                    <tr><th>ID</th><th>Image</th><th>Name</th><th>Series</th><th>Brand</th><th>SKU</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr>
+                    <tr><th>ID</th><th>Image</th><th>Name</th><th>Series</th><th>Brand</th><th>SKU</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th><th>Deleted</th></tr>
                 </thead>
             </table>
         </main>
@@ -58,8 +58,34 @@
                             <div class="form-group col-md-6"><label>SKU</label><input id="pSku" class="form-control"><span class="error-msg" id="pSkuError">SKU required.</span></div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-md-4"><label>Series</label><input id="pSeries" class="form-control"></div>
-                            <div class="form-group col-md-4"><label>Brand</label><input id="pBrand" class="form-control"></div>
+                            <div class="form-group col-md-4"><label>Series</label>
+                                <select id="pSeries" class="form-control">
+                                    <option value="">Select Series</option>
+                                    <option value="Pop!">Pop!</option>
+                                    <option value="Pop! Rocks">Pop! Rocks</option>
+                                    <option value="Pop! Movies">Pop! Movies</option>
+                                    <option value="Pop! TV">Pop! TV</option>
+                                    <option value="Pop! Animation">Pop! Animation</option>
+                                    <option value="Pop! Marvel">Pop! Marvel</option>
+                                    <option value="Pop! DC">Pop! DC</option>
+                                    <option value="Pop! Disney">Pop! Disney</option>
+                                    <option value="Labubu">Labubu</option>
+                                    <option value="Dimoo">Dimoo</option>
+                                    <option value="Skullpanda">Skullpanda</option>
+                                    <option value="Crybaby">Crybaby</option>
+                                    <option value="Hirono">Hirono</option>
+                                    <option value="Pino">Pino</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4"><label>Brand</label>
+                                <select id="pBrand" class="form-control">
+                                    <option value="">Select Brand</option>
+                                    <option value="Funko">Funko</option>
+                                    <option value="Pop Mart">Pop Mart</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
                             <div class="form-group col-md-4"><label>Status</label>
                                 <select id="pStatus" class="form-control"><option>In Stock</option><option>Low Stock</option><option>Out of Stock</option></select>
                             </div>

@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="admin-layout">
+    <div class="admin-layout" id="adminReports">
         <aside class="sidebar">
             <div class="sidebar-brand">The Pop Stop</div>
             <nav class="sidebar-nav">
@@ -48,12 +48,41 @@
             </div>
         </main>
     </div>
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/charts.js"></script>
     <script>
-    $(document).ready(function() {
+    const loadReports = () => {
+        const token = JSON.parse(sessionStorage.getItem('token'));
+        $.ajax({
+            method: 'GET',
+            url: `${window.API_URL}/api/v1/dashboard`,
+            headers: { Authorization: 'Bearer ' + token },
+            success: function (data) {
+                console.log('Reports data:', data);
+                dashboardData = data;
+                const now = new Date();
+                const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+                const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+                $('#startDate').val(firstDay);
+                $('#endDate').val(lastDay);
+                renderReportsCharts(data, firstDay, lastDay);
+            },
+            error: function (err) {
+                console.error('Error loading reports:', err);
+            }
+        });
+    };
+    $(document).ready(function () {
         const user = JSON.parse(sessionStorage.getItem('user') || 'null');
         if (!user || user.role !== 'admin') { window.location.href = '../index.html'; return; }
+        loadReports();
+        
+        $('#filterReports').on('click', function () {
+            if (dashboardData) {
+                renderReportsCharts(dashboardData, $('#startDate').val(), $('#endDate').val());
+            }
+        });
     });
     </script>
-    <script src="../js/charts.js"></script>
 </body>
 </html>

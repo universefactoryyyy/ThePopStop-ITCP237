@@ -48,7 +48,7 @@
         if (!user || user.role !== 'admin') { window.location.href = '../index.html'; return; }
         const token = JSON.parse(sessionStorage.getItem('token'));
         const statuses = ['Pending','Processing','Shipped','Delivered','Cancelled'];
-        $('#ordersTable').DataTable({
+        const table = $('#ordersTable').DataTable({
             ajax: { url: `${window.API_URL}/api/v1/orders`, dataSrc: 'rows', headers: { Authorization: 'Bearer ' + token } },
             columns: [
                 { data: 'id' },
@@ -59,19 +59,67 @@
                 { data: 'createdAt', render: d => new Date(d).toLocaleDateString() },
                 { data: null, render: d => {
                     let opts = statuses.map(s => `<option value="${s}" ${s===d.status?'selected':''}>${s}</option>`).join('');
-                    return `<select class="admin-select status-select" data-id="${d.id}">${opts}</select>`;
+                    return `<select class="admin-select status-select mr-2" data-id="${d.id}" data-current="${d.status}">${opts}</select>
+                            <button type="button" class="btn btn-sm btn-primary receipt-btn" data-id="${d.id}"><i class="fas fa-file-pdf"></i> Receipt</button>`;
                 }}
             ]
         });
         $(document).on('change', '.status-select', function() {
-            const id = $(this).data('id');
-            const status = $(this).val();
-            $.ajax({
-                method: 'PUT', url: `${window.API_URL}/api/v1/orders/${id}/status`,
-                headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-                data: JSON.stringify({ status }),
-                success: () => Swal.fire({ icon: 'success', text: 'Status updated. Email sent with PDF receipt.', timer: 2000, showConfirmButton: false })
+            const select = $(this);
+            const id = select.data('id');
+            const newStatus = select.val();
+            const currentStatus = select.data('current');
+            
+            if (newStatus === currentStatus) return;
+            
+            Swal.fire({
+                title: 'Change order status?',
+                text: `Are you sure you want to change the status from "${currentStatus}" to "${newStatus}"?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#FF3E72',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, change it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        method: 'PUT', url: `${window.API_URL}/api/v1/orders/${id}/status`,
+                        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+                        data: JSON.stringify({ status: newStatus }),
+                        success: () => {
+                            table.ajax.reload();
+                            Swal.fire({ icon: 'success', text: 'Status updated. Email sent with PDF receipt.', timer: 2000, showConfirmButton: false });
+                        },
+                        error: () => {
+                            select.val(currentStatus);
+                        }
+                    });
+                } else {
+                    select.val(currentStatus);
+                }
             });
+        });
+
+        $(document).on('click', '.receipt-btn', function() {
+            const orderId = $(this).data('id');
+            fetch(`${window.API_URL}/api/v1/orders/${orderId}/receipt`, {
+                headers: { Authorization: 'Bearer ' + token }
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error('Failed to download receipt');
+                    return res.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `receipt-order-${orderId}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                })
+                .catch(() => Swal.fire({ icon: 'error', text: 'Could not download receipt PDF.' }));
         });
     });
     </script>

@@ -64,7 +64,7 @@
             ]
         });
         $(document).on('change', '.role-select', function() {
-            $.ajax({ method:'PUT', url:`${window.API_URL}/api/v1/users/${$(this).data('id')}/role`, headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'}, data:JSON.stringify({role:$(this).val()}), success:()=>Swal.fire({icon:'success',text:'Role updated',timer:1000,showConfirmButton:false}) });
+            $.ajax({ method:'PUT', url:`${window.API_URL}/api/v1/users/${$(this).data('id')}/role`, headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'}, data:JSON.stringify({role:$(this).val()}), success:()=>{ table.ajax.reload(); Swal.fire({icon:'success',text:'Role updated',timer:1000,showConfirmButton:false}); } });
         });
         $(document).on('click', '.status-btn', function() {
             $.ajax({ method:'PUT', url:`${window.API_URL}/api/v1/users/${$(this).data('id')}/status`, headers:{Authorization:'Bearer '+token}, success:()=>{ table.ajax.reload(); Swal.fire({icon:'success',text:'Status updated',timer:1000,showConfirmButton:false}); } });

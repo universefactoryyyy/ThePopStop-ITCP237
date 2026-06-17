@@ -10,6 +10,12 @@ const { orderConfirmationEmail, orderStatusUpdateEmail } = require('../utils/ema
 const { calculateDiscountAmount } = require('./discount');
 const { Op } = require('sequelize');
 
+const getProductStatus = (stock) => {
+    if (stock <= 0) return 'Out of Stock';
+    if (stock <= 5) return 'Low Stock';
+    return 'In Stock';
+};
+
 exports.createOrder = async (req, res) => {
     try {
         const { cart, shipping_address, payment_method, discount_code } = req.body;
@@ -65,7 +71,8 @@ exports.createOrder = async (req, res) => {
         for (const item of cart) {
             const product = await Product.findByPk(item.product_id);
             await OrderItem.create({ order_id: order.id, product_id: item.product_id, quantity: item.quantity, unit_price: product.price });
-            await Product.update({ stock_quantity: product.stock_quantity - item.quantity }, { where: { id: item.product_id } });
+            const newStock = product.stock_quantity - item.quantity;
+            await Product.update({ stock_quantity: newStock, status: getProductStatus(newStock) }, { where: { id: item.product_id } });
         }
 
         const user = await User.findByPk(userId);
@@ -106,9 +113,17 @@ exports.getUserOrders = async (req, res) => {
 exports.getOrderReceipt = async (req, res) => {
     try {
         const order = await Order.findByPk(req.params.id, {
-            include: [{ model: OrderItem, include: [{ model: Product }] }, { model: User }]
+            include: [
+                { model: OrderItem, include: [{ model: Product }] },
+                { model: User }
+            ]
         });
         if (!order) return res.status(404).json({ error: 'Order not found' });
+
+        // Allow admin or order owner
+        if (req.body.user.role !== 'admin' && order.user_id !== req.body.user.id) {
+            return res.status(403).json({ error: 'Not authorized' });
+        }
 
         const pdfBuffer = await generateOrderReceipt(order);
         const inline = req.query.inline === '1';
