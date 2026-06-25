@@ -46,8 +46,10 @@ exports.loginUser = async (req, res) => {
         const { email, password } = req.body;
         if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
 
-        const user = await User.findOne({ where: { email, deleted_at: null, is_active: 1 } });
+        const user = await User.findOne({ where: { email, deleted_at: null } });
         if (!user) return res.status(401).json({ success: false, message: 'Invalid email or password' });
+        
+        if (!user.is_active) return res.status(401).json({ success: false, message: 'Account Deactivated' });
 
         const match = await bcrypt.compare(password, user.password);
         if (!match) return res.status(401).json({ success: false, message: 'Invalid email or password' });
@@ -55,7 +57,6 @@ exports.loginUser = async (req, res) => {
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
         await user.update({ token });
 
-        // Get customer for avatar
         const customer = await Customer.findOne({ where: { user_id: user.id } });
 
         return res.status(200).json({
@@ -140,6 +141,14 @@ exports.updateUserRole = async (req, res) => {
     try {
         const { id } = req.params;
         const { role } = req.body;
+        
+        const user = await User.findByPk(id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        
+        if (user.role === 'customer') {
+            return res.status(403).json({ error: 'Cannot change role of a customer' });
+        }
+        
         await User.update({ role }, { where: { id } });
         return res.status(200).json({ success: true, message: 'Role updated' });
     } catch (err) {
@@ -154,8 +163,7 @@ exports.deactivateUser = async (req, res) => {
         if (!user) return res.status(404).json({ error: 'User not found' });
 
         const newStatus = user.is_active ? 0 : 1;
-        const deleted_at = newStatus === 0 ? new Date() : null;
-        await user.update({ is_active: newStatus, deleted_at });
+        await user.update({ is_active: newStatus });
 
         return res.status(200).json({ success: true, message: newStatus ? 'User activated' : 'User deactivated' });
     } catch (err) {

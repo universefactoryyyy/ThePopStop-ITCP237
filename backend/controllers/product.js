@@ -1,6 +1,8 @@
 const db = require('../models');
 const Product = db.Product;
 const ProductPhoto = db.ProductPhoto;
+const OrderItem = db.OrderItem;
+const Review = db.Review;
 const { Op } = require('sequelize');
 const jwt = require('jsonwebtoken');
 
@@ -8,6 +10,33 @@ const getProductStatus = (stock) => {
     if (stock <= 0) return 'Out of Stock';
     if (stock <= 5) return 'Low Stock';
     return 'In Stock';
+};
+
+// Helper function to get product stats
+const getProductStats = async (productId) => {
+    try {
+        // Get sold count
+        const soldResult = await OrderItem.sum('quantity', { where: { product_id: productId } });
+        const soldCount = soldResult || 0;
+        
+        // Get average rating
+        const avgRatingResult = await Review.findOne({
+            where: { product_id: productId, is_approved: 1 },
+            attributes: [[db.sequelize.fn('AVG', db.sequelize.col('rating')), 'avgRating']]
+        });
+        const averageRating = avgRatingResult?.dataValues?.avgRating 
+            ? parseFloat(avgRatingResult.dataValues.avgRating) 
+            : null;
+            
+        const reviewCount = await Review.count({
+            where: { product_id: productId, is_approved: 1 }
+        });
+        
+        return { soldCount, averageRating, reviewCount };
+    } catch (err) {
+        console.error('Error getting product stats:', err);
+        return { soldCount: 0, averageRating: null, reviewCount: 0 };
+    }
 };
 
 exports.getAllProducts = async (req, res) => {
@@ -36,7 +65,30 @@ exports.getAllProducts = async (req, res) => {
         if (sort === 'price_asc') order = [['price', 'ASC']];
         if (sort === 'price_desc') order = [['price', 'DESC']];
 
-        const products = await Product.findAll({ where, include: [{ model: ProductPhoto }], order });
+        let products = await Product.findAll({ where, include: [{ model: ProductPhoto }], order });
+        
+        // Enhance products with stats
+        products = await Promise.all(products.map(async (product) => {
+            const stats = await getProductStats(product.id);
+            return {
+                ...product.toJSON(),
+                sold_count: stats.soldCount,
+                average_rating: stats.averageRating,
+                review_count: stats.reviewCount
+            };
+        }));
+
+        // Apply sort by sold or rating after getting stats
+        if (sort === 'sold_asc') {
+            products.sort((a, b) => a.sold_count - b.sold_count);
+        } else if (sort === 'sold_desc') {
+            products.sort((a, b) => b.sold_count - a.sold_count);
+        } else if (sort === 'rating_asc') {
+            products.sort((a, b) => (a.average_rating || 0) - (b.average_rating || 0));
+        } else if (sort === 'rating_desc') {
+            products.sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0));
+        }
+
         return res.status(200).json({ rows: products });
     } catch (err) {
         console.log(err);
@@ -53,7 +105,18 @@ exports.getSingleProduct = async (req, res) => {
             }]
         });
         if (!product) return res.status(404).json({ message: 'Product not found' });
-        return res.status(200).json({ success: true, result: product });
+        
+        const stats = await getProductStats(product.id);
+        
+        return res.status(200).json({ 
+            success: true, 
+            result: {
+                ...product.toJSON(),
+                sold_count: stats.soldCount,
+                average_rating: stats.averageRating,
+                review_count: stats.reviewCount
+            }
+        });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: 'Error fetching product' });

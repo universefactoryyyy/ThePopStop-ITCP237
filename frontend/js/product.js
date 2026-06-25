@@ -3,14 +3,6 @@ const getOptionalToken = () => {
     return token ? JSON.parse(token) : null;
 };
 
-const renderStars = (rating) => {
-    let stars = '';
-    for (let i = 1; i <= 5; i++) {
-        stars += i <= rating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
-    }
-    return stars;
-};
-
 let currentProductId = null;
 let eligibleOrders = [];
 let myReviews = [];
@@ -80,11 +72,14 @@ const loadReviewEligibility = (productId) => {
             if (data.canReview) {
                 $('#reviewFormWrap').show();
                 $('#noReviewMsg').hide();
-                let opts = '<option value="">Select delivered order</option>';
-                eligibleOrders.forEach(o => {
-                    opts += `<option value="${o.id}">Order #${o.id} - ${new Date(o.date).toLocaleDateString()}</option>`;
-                });
-                $('#reviewOrderId').html(opts);
+                // Auto-select first eligible order, hide the dropdown
+                if (eligibleOrders.length > 0) {
+                    let opts = '';
+                    eligibleOrders.forEach(o => {
+                        opts += `<option value="${o.id}">Order #${o.id} - ${new Date(o.date).toLocaleDateString()}</option>`;
+                    });
+                    $('#reviewOrderId').html(opts).val(eligibleOrders[0].id).closest('.form-group').hide();
+                }
             } else {
                 $('#reviewFormWrap').hide();
                 if (!token) {
@@ -107,11 +102,11 @@ const resetReviewForm = () => {
     $('#reviewForm')[0].reset();
     $('#reviewAnonymous').prop('checked', false);
     if (eligibleOrders.length) {
-        let opts = '<option value="">Select delivered order</option>';
+        let opts = '';
         eligibleOrders.forEach(o => {
             opts += `<option value="${o.id}">Order #${o.id} - ${new Date(o.date).toLocaleDateString()}</option>`;
         });
-        $('#reviewOrderId').html(opts);
+        $('#reviewOrderId').html(opts).val(eligibleOrders[0].id).closest('.form-group').hide();
     }
 };
 
@@ -129,45 +124,63 @@ $(document).ready(function () {
     initNavbar();
 
     $.ajax({
-        method: 'GET',
-        url: `${window.API_URL}/api/v1/products/${encodeURIComponent(productId)}`,
-        success: function (data) {
-            const p = data.result;
-            if (!p) {
-                Swal.fire({ icon: 'error', text: 'Product data could not be loaded.' });
-                return;
-            }
-            document.title = `${p.name} - The Pop Stop`;
-            $('#productName').text(p.name);
-            $('#breadcrumbName').text(p.name);
-            $('#productBrand').text(`${p.series || ''} | ${p.brand || ''}`);
-            $('#productSku').text(p.sku);
-            $('#productPrice').text(formatPeso(p.price));
-            $('#productDesc').text(p.description || 'No description available.');
-            $('#productStatus').text(p.status);
-            $('#productStatusBadge').html(getStatusBadge(p.status));
-            $('#qtyInput').attr('max', p.stock_quantity);
+            method: 'GET',
+            url: `${window.API_URL}/api/v1/products/${encodeURIComponent(productId)}`,
+            success: function (data) {
+                console.log('Product data:', data);
+                const p = data.result;
+                if (!p) {
+                    Swal.fire({ icon: 'error', text: 'Product data could not be loaded.' });
+                    return;
+                }
+                document.title = `${p.name} - The Pop Stop`;
+                $('#productName').text(p.name);
+                $('#breadcrumbName').text(p.name);
+                $('#productBrand').text(`${p.series || ''} | ${p.brand || ''}`);
+                $('#productSku').text(p.sku);
+                $('#productPrice').text(formatPeso(p.price));
+                $('#productDesc').text(p.description || 'No description available.');
+                $('#productStatus').text(p.status);
+                $('#productStatusBadge').html(getStatusBadge(p.status));
+                $('#qtyInput').attr('max', p.stock_quantity);
 
-            const mainImg = getImageUrl(p.image_url);
-            $('#mainImage').attr('src', mainImg).on('error', function () { $(this).attr('src', 'images/placeholder.svg'); });
+                // Handle rating display only if there are reviews
+                if (p.average_rating != null) {
+                    $('#productRatingDisplay').html(renderStars(Math.round(p.average_rating)) + ` <span class="ml-1 text-muted">(${p.review_count} reviews)</span>`).show();
+                } else {
+                    $('#productRatingDisplay').hide();
+                }
 
-            let thumbs = `<img src="${mainImg}" class="active thumb-img" data-src="${mainImg}">`;
-            if (p.ProductPhotos) {
-                p.ProductPhotos.forEach(photo => {
-                    const src = getImageUrl(photo.photo_path);
-                    thumbs += `<img src="${src}" class="thumb-img" data-src="${src}">`;
-                });
-            }
-            $('#galleryThumbs').html(thumbs);
+                // Add sold count
+                if (p.sold_count > 0) {
+                    const soldEl = $('<div class="mt-1 text-muted" id="productSold"></div>').text(`${p.sold_count} sold`);
+                    if ($('#productRatingDisplay').is(':visible')) {
+                        $('#productRatingDisplay').after(soldEl);
+                    } else {
+                        $('#productPrice').after(soldEl);
+                    }
+                }
 
-            if (p.status === 'Out of Stock') {
-                $('#addCartBtn').prop('disabled', true).addClass('btn-disabled').html('<i class="fas fa-ban"></i> Out of Stock');
-                $('.product-action-btns .btn-outline').addClass('btn-disabled').attr('href', '#').attr('onclick', 'return false;').css('pointer-events', 'none');
-            } else {
-                $('#addCartBtn').prop('disabled', false).removeClass('btn-disabled').html('<i class="fas fa-cart-plus"></i> Add to Cart');
-                $('.product-action-btns .btn-outline').removeClass('btn-disabled').attr('href', 'cart.html').removeAttr('onclick').css('pointer-events', 'auto');
-            }
-        },
+                const mainImg = getImageUrl(p.image_url);
+                $('#mainImage').attr('src', mainImg).on('error', function () { $(this).attr('src', 'images/placeholder.svg'); });
+
+                let thumbs = `<img src="${mainImg}" class="active thumb-img" data-src="${mainImg}">`;
+                if (p.ProductPhotos) {
+                    p.ProductPhotos.forEach(photo => {
+                        const src = getImageUrl(photo.photo_path);
+                        thumbs += `<img src="${src}" class="thumb-img" data-src="${src}">`;
+                    });
+                }
+                $('#galleryThumbs').html(thumbs);
+
+                if (p.status === 'Out of Stock') {
+                    $('#addCartBtn').prop('disabled', true).addClass('btn-disabled').html('<i class="fas fa-ban"></i> Out of Stock');
+                    $('.product-action-btns .btn-outline').addClass('btn-disabled').attr('href', '#').attr('onclick', 'return false;').css('pointer-events', 'none');
+                } else {
+                    $('#addCartBtn').prop('disabled', false).removeClass('btn-disabled').html('<i class="fas fa-cart-plus"></i> Add to Cart');
+                    $('.product-action-btns .btn-outline').removeClass('btn-disabled').attr('href', 'cart.html').removeAttr('onclick').css('pointer-events', 'auto');
+                }
+            },
         error: function (xhr) {
             const message = xhr.status === 404
                 ? 'Product not found.'

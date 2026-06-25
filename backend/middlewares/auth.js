@@ -13,6 +13,23 @@ exports.isAuthenticatedUser = (req, res, next) => {
     next();
 };
 
+exports.optionalAuth = (req, res, next) => {
+    req.body = req.body || {};
+    req.body.user = null;
+    if (req.header('Authorization')) {
+        try {
+            const token = req.header('Authorization').split(' ')[1];
+            if (token) {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                req.body.user = { id: decoded.id };
+            }
+        } catch (err) {
+            // Ignore invalid tokens for optional auth
+        }
+    }
+    next();
+};
+
 exports.isAdmin = async (req, res, next) => {
     if (!req.header('Authorization')) {
         return res.status(401).json({ message: 'Login first' });

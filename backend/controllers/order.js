@@ -120,11 +120,6 @@ exports.getOrderReceipt = async (req, res) => {
         });
         if (!order) return res.status(404).json({ error: 'Order not found' });
 
-        // Allow admin or order owner
-        if (req.body.user.role !== 'admin' && order.user_id !== req.body.user.id) {
-            return res.status(403).json({ error: 'Not authorized' });
-        }
-
         const pdfBuffer = await generateOrderReceipt(order);
         const inline = req.query.inline === '1';
         res.setHeader('Content-Type', 'application/pdf');

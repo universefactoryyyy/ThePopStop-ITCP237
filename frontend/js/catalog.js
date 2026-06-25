@@ -1,3 +1,5 @@
+
+
 const getAddToCartButton = (product) => {
     if (product.status === 'Out of Stock') {
         return '<button type="button" class="btn btn-sm btn-disabled" disabled><i class="fas fa-cart-plus"></i> Out of Stock</button>';
@@ -11,6 +13,7 @@ const buildProductCard = (product) => {
     const series = escapeHtml(product.series || '');
     const brand = escapeHtml(product.brand || '');
     const img = escapeHtml(getImageUrl(product.image_url));
+    const hasStats = product.average_rating != null || product.sold_count > 0;
 
     return `
     <div class="product-card">
@@ -18,7 +21,6 @@ const buildProductCard = (product) => {
             <div class="product-card-image-wrap">
                 <img src="${img}" alt="${name}" onerror="this.src='images/placeholder.svg'">
                 <div class="product-stock-overlay">${getStatusBadge(product.status)}</div>
-                <span class="wishlist-btn" aria-hidden="true"><i class="far fa-heart"></i></span>
             </div>
         </a>
         <div class="card-body">
@@ -27,6 +29,14 @@ const buildProductCard = (product) => {
                 <div class="product-brand">${series}${series && brand ? ' | ' : ''}${brand}</div>
                 <div class="product-price">${formatPeso(product.price)}</div>
             </div>
+            ${hasStats ? `
+            <div class="product-stats mt-1 mb-1" style="font-size: 13px;">
+                ${product.average_rating != null ? `
+                    <span class="mr-2">${renderStars(Math.round(product.average_rating), true)} ${product.average_rating.toFixed(1)}</span>
+                ` : ''}
+                ${product.sold_count > 0 ? `<span class="text-muted">${product.sold_count} sold</span>` : ''}
+            </div>
+            ` : ''}
             <div class="product-actions">
                 <a href="${detailUrl}" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> View Details</a>
                 ${getAddToCartButton(product)}

@@ -1,6 +1,16 @@
 window.API_URL = window.API_URL || 'http://localhost:4000';
 var API_URL = window.API_URL;
 
+const renderStars = (rating, includeColors = false) => {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        const starClass = i <= rating ? 'fas fa-star' : 'far fa-star';
+        const colorClass = includeColors ? (i <= rating ? ' text-warning' : ' text-secondary') : '';
+        stars += `<i class="${starClass}${colorClass}"></i>`;
+    }
+    return stars;
+};
+
 const escapeHtml = (text) => {
     if (!text) return '';
     return String(text)

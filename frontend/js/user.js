@@ -30,6 +30,8 @@ $(document).ready(function () {
                         .then(() => window.location.href = 'index.html');
                 },
                 error: function (xhr) {
+                    console.log('Login error xhr:', xhr);
+                    console.log('Login error response:', xhr.responseJSON);
                     Swal.fire({ icon: 'error', text: xhr.responseJSON?.message || 'Login failed.' });
                 }
             });
