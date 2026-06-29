@@ -55,7 +55,7 @@
                 { data: 'createdAt', render: d => new Date(d).toLocaleDateString() },
                 { data: null, render: d => `
                     <div class="admin-actions">
-                        <select class="admin-select role-select" data-id="${d.id}">
+                        <select class="admin-select role-select" data-id="${d.id}" ${d.role==='customer'?'disabled':''}>
                             <option value="customer" ${d.role==='customer'?'selected':''}>Customer</option>
                             <option value="admin" ${d.role==='admin'?'selected':''}>Admin</option>
                         </select>

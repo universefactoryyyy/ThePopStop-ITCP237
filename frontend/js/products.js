@@ -58,6 +58,14 @@ const applyFilters = () => {
         filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
     } else if (sort === 'price_desc') {
         filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+    } else if (sort === 'sold_asc') {
+        filteredProducts.sort((a, b) => (a.sold_count || 0) - (b.sold_count || 0));
+    } else if (sort === 'sold_desc') {
+        filteredProducts.sort((a, b) => (b.sold_count || 0) - (a.sold_count || 0));
+    } else if (sort === 'rating_asc') {
+        filteredProducts.sort((a, b) => (a.average_rating || 0) - (b.average_rating || 0));
+    } else if (sort === 'rating_desc') {
+        filteredProducts.sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0));
     }
 
     currentPage = 1;
@@ -84,9 +92,9 @@ $(document).ready(function () {
     initNavbar();
     loadProducts();
 
-    $('#searchInput, #brandFilter, #seriesFilter, #statusFilter, #sortFilter').on('input change', applyFilters);
+    $(document).on('input change', '#searchInput, #brandFilter, #seriesFilter, #statusFilter, #sortFilter', applyFilters);
 
-    $('#clearFilters').on('click', function () {
+    $(document).on('click', '#clearFilters', function () {
         $('#searchInput').val('');
         $('#brandFilter').val('');
         $('#seriesFilter').val('');

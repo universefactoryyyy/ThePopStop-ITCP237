@@ -57,8 +57,10 @@
                 { data: 'review_text', render: d => d ? d.substring(0, 50) + (d.length > 50 ? '...' : '') : '' },
                 { data: 'is_approved', render: d => d ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-warning">No</span>' },
                 { data: null, render: d => `
-                    <button class="btn btn-sm btn-secondary approve-btn" data-id="${d.id}">${d.is_approved?'Unapprove':'Approve'}</button>
-                    <button class="btn btn-sm btn-danger delete-btn" data-id="${d.id}"><i class="fas fa-trash"></i></button>` }
+                    <div class="admin-actions">
+                        <button class="btn btn-sm btn-secondary approve-btn" data-id="${d.id}">${d.is_approved?'Unapprove':'Approve'}</button>
+                        <button class="btn btn-sm btn-danger delete-btn" data-id="${d.id}"><i class="fas fa-trash"></i></button>
+                    </div>` }
             ]
         });
         $(document).on('click', '.approve-btn', function() {
