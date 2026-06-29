@@ -17,17 +17,25 @@ const getProductStatus = (stock) => {
 };
 
 exports.createOrder = async (req, res) => {
+    const transaction = await db.sequelize.transaction();
     try {
         const { cart, shipping_address, payment_method, discount_code } = req.body;
         const userId = req.body.user.id;
 
-        if (!cart || cart.length === 0) return res.status(400).json({ error: 'Cart is empty' });
+        if (!cart || cart.length === 0) {
+            await transaction.rollback();
+            return res.status(400).json({ error: 'Cart is empty' });
+        }
 
         let subtotal_amount = 0;
         for (const item of cart) {
-            const product = await Product.findByPk(item.product_id);
-            if (!product) return res.status(404).json({ error: `Product ${item.product_id} not found` });
+            const product = await Product.findByPk(item.product_id, { transaction });
+            if (!product) {
+                await transaction.rollback();
+                return res.status(404).json({ error: `Product ${item.product_id} not found` });
+            }
             if (product.status === 'Out of Stock') {
+                await transaction.rollback();
                 return res.status(400).json({ error: `${product.name} is out of stock` });
             }
             subtotal_amount += product.price * item.quantity;
@@ -35,24 +43,31 @@ exports.createOrder = async (req, res) => {
 
         let discount_amount = 0;
         let appliedCode = null;
+        let discount = null;
         if (discount_code) {
-            const discount = await Discount.findOne({
+            discount = await Discount.findOne({
                 where: {
                     code: discount_code.trim().toUpperCase(),
                     is_active: 1,
                     [Op.or]: [{ expires_at: null }, { expires_at: { [Op.gt]: new Date() } }]
-                }
+                },
+                transaction
             });
-            if (!discount) return res.status(400).json({ error: 'Invalid or expired discount code' });
+            if (!discount) {
+                await transaction.rollback();
+                return res.status(400).json({ error: 'Invalid or expired discount code' });
+            }
             if (discount.max_uses !== null && discount.used_count >= discount.max_uses) {
+                await transaction.rollback();
                 return res.status(400).json({ error: 'This discount code has reached its usage limit' });
             }
             if (subtotal_amount < parseFloat(discount.min_order_amount)) {
+                await transaction.rollback();
                 return res.status(400).json({ error: `Minimum order of ₱${parseFloat(discount.min_order_amount).toFixed(2)} required` });
             }
             discount_amount = calculateDiscountAmount(discount, subtotal_amount);
             appliedCode = discount.code;
-            await discount.update({ used_count: discount.used_count + 1 });
+            await discount.update({ used_count: discount.used_count + 1 }, { transaction });
         }
 
         const total_amount = subtotal_amount - discount_amount;
@@ -66,14 +81,16 @@ exports.createOrder = async (req, res) => {
             shipping_address,
             payment_method,
             status: 'Pending'
-        });
+        }, { transaction });
 
         for (const item of cart) {
-            const product = await Product.findByPk(item.product_id);
-            await OrderItem.create({ order_id: order.id, product_id: item.product_id, quantity: item.quantity, unit_price: product.price });
+            const product = await Product.findByPk(item.product_id, { transaction });
+            await OrderItem.create({ order_id: order.id, product_id: item.product_id, quantity: item.quantity, unit_price: product.price }, { transaction });
             const newStock = product.stock_quantity - item.quantity;
-            await Product.update({ stock_quantity: newStock, status: getProductStatus(newStock) }, { where: { id: item.product_id } });
+            await Product.update({ stock_quantity: newStock, status: getProductStatus(newStock) }, { where: { id: item.product_id }, transaction });
         }
+
+        await transaction.commit();
 
         const user = await User.findByPk(userId);
         const fullOrder = await Order.findByPk(order.id, {
@@ -91,6 +108,7 @@ exports.createOrder = async (req, res) => {
 
         return res.status(201).json({ success: true, order_id: order.id, total_amount, message: 'Order placed successfully' });
     } catch (err) {
+        await transaction.rollback();
         console.log(err);
         return res.status(500).json({ error: 'Error creating order', details: err.message });
     }
